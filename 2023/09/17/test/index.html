@@ -11,6 +11,11 @@
   
   <title>
     
+      test 
+      
+      
+      |
+    
      Hexo
   </title>
 
@@ -101,149 +106,90 @@
 
 
       <div class="flex-container">
-        <div class="container index">
-  <div class="post-list">
-    <!-- 遍历渲染文章 -->
-    
-      <div class="post-item" title="test">
-        <div class="time-m-d">2023-09-17</div>
-        <div class="title">
-          <a href="/2023/09/17/test/">
-            
-              
-                <span>test</span>
-              
-            
-          </a>
-        </div>
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">test</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-09-17 23:30:10
+        </span>
+        
       </div>
-    
-      <div class="post-item" title="分组密码的工作模式">
-        <div class="time-m-d">2023-03-02</div>
-        <div class="title">
-          <a href="/2023/03/02/Working-mode-of-block-password/">
-            
-              
-                <span>分组密码的工作模式</span>
-              
-            
-          </a>
-        </div>
+      <div class="markdown-body">
+        
       </div>
-    
-      <div class="post-item" title="学习文件包含漏洞">
-        <div class="time-m-d">2023-02-27</div>
-        <div class="title">
-          <a href="/2023/02/27/learn-file-include-vulnerability/">
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
             
-              
-                <span>学习文件包含漏洞</span>
-              
+              <a href="/2023/03/02/Working-mode-of-block-password/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
             
-          </a>
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-09-17 23:30:10
+            </span>
+            
+          </div>
+          <div class="post-foot-prev">
+            
+          </div>
         </div>
-      </div>
+      
+    </div>
     
-      <div class="post-item" title="域内基本信息查询及操作">
-        <div class="time-m-d">2023-02-25</div>
-        <div class="title">
-          <a href="/2023/02/25/Querying-and-operating-basic-information-in-a-domain/">
-            
-              
-                <span>域内基本信息查询及操作</span>
-              
-            
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="学习文件上传漏洞">
-        <div class="time-m-d">2023-02-25</div>
-        <div class="title">
-          <a href="/2023/02/25/learn-file-upload-vulnerability/">
-            
-              
-                <span>学习文件上传漏洞</span>
-              
-            
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="重新认识SQL注入">
-        <div class="time-m-d">2023-02-18</div>
-        <div class="title">
-          <a href="/2023/02/18/Relearn-sql-injection/">
-            
-              
-                <span>重新认识SQL注入</span>
-              
-            
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="git学习">
-        <div class="time-m-d">2023-02-15</div>
-        <div class="title">
-          <a href="/2023/02/15/git-learn/">
-            
-              
-                <span>git学习</span>
-              
-            
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="论文学习(Efficient Attribute-Based Searchable Encryption on the Cloud Storage)">
-        <div class="time-m-d">2023-01-31</div>
-        <div class="title">
-          <a href="/2023/01/31/Efficient-Attribute-Based-Searchable-Encryption-on-the-Cloud-Storage/">
-            
-              
-                <span>论文学习(Efficient Attribute-Based Searchable Encryption on the Cloud Storage)</span>
-              
-            
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="学习HTTP请求包中的Content-Type参数">
-        <div class="time-m-d">2023-01-26</div>
-        <div class="title">
-          <a href="/2023/01/26/Learn-Content-Type-parameter/">
-            
-              
-                <span>学习HTTP请求包中的Content-Type参数</span>
-              
-            
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="利用Burpsuit的Repeater模块构造请求数据包">
-        <div class="time-m-d">2023-01-26</div>
-        <div class="title">
-          <a href="/2023/01/26/Construct-the-packets-by-using-repeater-module-of-Burpsuit/">
-            
-              
-                <span>利用Burpsuit的Repeater模块构造请求数据包</span>
-              
-            
-          </a>
-        </div>
-      </div>
+
     
   </div>
-  <nav class="post-navigation">
-    
-    <span class="page-num">1 / 2</span>
-    
-      <a href="/page/2/"><i class="iconfont icon-angleright"></i></a>
-    
-  </nav>
-</div>
+
 
         
 <div class="footer">
@@ -498,6 +444,24 @@
 
 
         
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + test + '&url=' + https%3A%2F%2Fmagi2b0y.github.io%2F2023%2F09%2F17%2Ftest%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://magi2b0y.github.io/2023/09/17/test/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
   
   
 <script src="/js/shares.js"></script>
