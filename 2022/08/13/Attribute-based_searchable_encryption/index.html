@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="Magi2B0y" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      基于属性的可搜索加密 
+      
+      
+      |
+    
+     Hexo
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img no-lazy src="/images/cat-avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">MagicBoy</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">基于属性的可搜索加密</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2022-11-25 10:59:32
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86/" title="可搜索加密">
+                    <b>#</b> 可搜索加密
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <style>
+.center 
+{
+  width: auto;
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+<h1 id="1-铺垫知识"><a href="#1-铺垫知识" class="headerlink" title="1. 铺垫知识"></a>1. 铺垫知识</h1><h2 id="1-1-基于身份的加密-Identity-Based-Encryption，IBE"><a href="#1-1-基于身份的加密-Identity-Based-Encryption，IBE" class="headerlink" title="1.1 基于身份的加密(Identity-Based Encryption，IBE)"></a>1.1 基于身份的加密(Identity-Based Encryption，IBE)</h2><h3 id="1-1-1-概念"><a href="#1-1-1-概念" class="headerlink" title="1.1.1 概念"></a>1.1.1 概念</h3><p>基于身份加密技术是为了解决公钥加密算法中数字证书管理的困难性而提出的，基于身份加密技术使用用户的身份 ( 如 ID 和邮箱等 ) 作为公钥，由可信的第三方（PKG）产生用户的私钥。基于身份加密技术是一种公钥加密技术，用于指定接收者的身份信息，可实现身份鉴别、消息加密、数字签名和协商会话密钥。</p>
+<h3 id="1-1-2-算法"><a href="#1-1-2-算法" class="headerlink" title="1.1.2 算法"></a>1.1.2 算法</h3><p>a)系统初始化算法setup。该算法的输入是安全参数k，输出是系统参数params和主密钥msk。该算法由PKG执行。</p>
+<p>b)私钥生成算法keyGen。该算法的输入是params、主密钥msk和身份ID，输出是ID对应的私钥d。该算法由PKG执行。</p>
+<p>c)加密算法encrypt。该算法的输入是params、身份ID和消息M，输出是密文C。该算法由加密者执行。</p>
+<p>d)解密算法decrypt。该算法的输入是params、密文C和私钥d，输出是消息M。该算法由解密者执行。</p>
+<h2 id="1-2-基于角色的访问控制-Role-Based-Access-Control，RBA"><a href="#1-2-基于角色的访问控制-Role-Based-Access-Control，RBA" class="headerlink" title="1.2 基于角色的访问控制(Role-Based Access Control，RBA)"></a>1.2 基于角色的访问控制(Role-Based Access Control，RBA)</h2><h3 id="1-2-1-概念"><a href="#1-2-1-概念" class="headerlink" title="1.2.1 概念"></a>1.2.1 概念</h3><p>基于角色的访问控制，就是用户通过角色与权限进行关联。简单地说，一个用户拥有若干角色，每一个角色拥有若干权限。这样，就构造成“用户-角色-权限”的授权模型。在这种模型中，用户与角色之间，角色与权限（功能）之间，一般都是多对多的关系。</p>
+<h2 id="1-3-基于属性的加密-Attribute-based-encryption，ABE"><a href="#1-3-基于属性的加密-Attribute-based-encryption，ABE" class="headerlink" title="1.3 基于属性的加密(Attribute-based encryption，ABE)"></a>1.3 基于属性的加密(Attribute-based encryption，ABE)</h2><h3 id="1-3-1-概念"><a href="#1-3-1-概念" class="headerlink" title="1.3.1 概念"></a>1.3.1 概念</h3><p>2006年，Goyal V, Pandey A, Sahai A, Waters B在the 13th ACM Conf. on Computer and Communications Security会议上提出了基于属性加密的概念， Sahai A, Waters B提出了第一个基于属性加密方案。其概念如下图所示：</p>
+<div class="center">
+<img src="./Attribute-based_searchable_encryption/1-3-1.png">
+</div>
+
+<p>数据拥有者需要制定一条仅有这n个用户才能满足的访问策略，接着输入公共参数PP、该条策略以及明文文件至ABE加密算法，进行加密一次，形成唯一一份密文。得到密文后，数据拥有者将该份密文分别发送给n个不同的用户。</p>
+<h3 id="1-3-2-KP-ABE方案"><a href="#1-3-2-KP-ABE方案" class="headerlink" title="1.3.2 KP-ABE方案"></a>1.3.2 KP-ABE方案</h3><p> KP-ABE（Key Policy Attribute-based Encryption，基于密钥策略的属性加密）方案是将策略嵌入到密钥中，属性嵌入到密文中，密钥对应于一个访问结构而密文对应于一个属性集合，解密当且仅当属性集合中的属性能够满足此访问策略。这种设计比较接近静态场景，此时密文用与其相关的属性加密存放在服务器上，当允许用户得到某些消息时，就分配一个特定的访问策略给用户，其应用场景则更加偏向于付费视频网站、日志加密管理等等。如果用户想解密多个文件，那么他必须拥有多个可以满足匹配的秘钥，否则不能解密多个文件。其包含一下四个算法：</p>
+<ul>
+<li>**Setup(γ,U)**：以安全参数γ和属性全集U作为输入，初始化系统并生成系统公共参数pk及主密钥mk；</li>
+<li>**KeyGen(pk,mk,T)**：以系统公共参数pk、主密钥mk以及用户的访问策略T为输入，输出与T对应的用户私钥SKT；</li>
+<li>**Encrypt(pk,w,m)**：以系统公共参数pk、属性集合w以及明文m为输入，输出密文CTw；</li>
+<li>**Decrypt(pk,SKT,CTw)**：以系统公共参数pk、用户私钥SKT及密文CTw为输入，当且仅当CTw对应的属性集合w满足SKT对应的访问控制策略T时，算法输出明文m。</li>
+</ul>
+<h3 id="1-3-3-CP-ABE"><a href="#1-3-3-CP-ABE" class="headerlink" title="1.3.3 CP-ABE"></a>1.3.3 CP-ABE</h3><p> CP-ABE（Ciphertext Policy Attribute-based Encryption，基于密文策略的属性加密），是将策略嵌入到密文中，属性嵌入到密钥中，CP-ABE由于策略嵌入密文中，这就意味着数据拥有者可以通过设定策略去决定拥有哪些属性的人能够访问这份密文，也就相当于对这份数据做了一个粒度可以细化到属性级别的加密访问控制，CP-ABE的应用场景一般是公有云上的数据加密存储与细粒度共享。其包含一下四个算法：</p>
+<ul>
+<li>**Setup(γ,U)**：以安全参数γ和属性全集U作为输入，输出系统公共参数pk及主密钥mk；</li>
+<li>**KeyGen(pk,mk,w)**：输入系统公共参数pk、主密钥mk以及用户属性集合w，输出与w对应的用户私钥SKw；</li>
+<li>**Encrypt(pk,T,m)**：以系统公共参数pk、访问控制策略T以及明文m为输入，输出密文CTT；</li>
+<li>**Decrypt(pk,SKw,CTT)**：以系统公共参数pk、用户私钥SKw及密文CTT为输入，当且仅当SKw对应的属性集合w满足CTT对应的访问控制策略T时，输出明文m。</li>
+</ul>
+<h1 id="2-基于属性的可搜索加密（内嵌CP-ABE模块）"><a href="#2-基于属性的可搜索加密（内嵌CP-ABE模块）" class="headerlink" title="2. 基于属性的可搜索加密（内嵌CP-ABE模块）"></a>2. 基于属性的可搜索加密（内嵌CP-ABE模块）</h1><p><strong>项目地址</strong>：<a target="_blank" rel="noopener" href="https://github.com/Magi2B0y/Attribute-Based-Searchable-Encryption">https://github.com/Magi2B0y/Attribute-Based-Searchable-Encryption</a></p>
+<p><strong>网络业务整体运行流程图</strong>：</p>
+<div class="center">
+<img src="./Attribute-based_searchable_encryption/2.png">
+</div>
+
+<p><strong>流程说明</strong>：</p>
+<ol>
+<li><p>文件上传者将要加密的文件列表、文件索引、文件访问策略和全网属性上传，生成加密后的文件索引和文件密文，将这些内容上传网络，形成倒排索引</p>
+</li>
+<li><p>文件搜索者将自身属性、搜索关键词和全网属性上传，生成搜索 token 文件交给网络节点</p>
+</li>
+<li><p>网络节点拿到文件搜索者上传的搜索 token 文件，对倒排索引表的加密后的文件索引一一检索，若成功检索到，就将对应的密文文件返回给文件搜索者</p>
+</li>
+<li><p>文件搜索者利用自身属性对密文进行解密</p>
+</li>
+</ol>
+<h3 id="PubAndMskGenerate-jar"><a href="#PubAndMskGenerate-jar" class="headerlink" title="PubAndMskGenerate.jar"></a>PubAndMskGenerate.jar</h3><p><strong>命令行</strong>：<code>java -jar PubAndMskGenerate.jar -a &quot;ECNU teacher doctor master bachelor 2016 2015 2014&quot;</code></p>
+<div class="center">
+
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-a</td>
+<td>全网所有的属性</td>
+</tr>
+</tbody></table>
+</div>
+
+<p><strong>运行结果</strong>：<br>每次只有要更新全网所有属性时，需要运行PubAndMskGenerate.jar生成新的可搜索加密的公钥（.&#x2F;SerializedData&#x2F;SearchableEncryption&#x2F;Pub.ser）和主密钥（.&#x2F;SerializedData&#x2F;SearchableEncryption&#x2F;Msk.ser）重新分发给全网，目前全网属性是<code>ECNU teacher doctor master bachelor 2016 2015 2014</code></p>
+<h3 id="FilesUploader-jar"><a href="#FilesUploader-jar" class="headerlink" title="FilesUploader.jar"></a>FilesUploader.jar</h3><p><strong>命令行</strong>：<code>java -jar FilesUploader.jar -a &quot;ECNU teacher doctor master bachelor 2016 2015 2014&quot; -p &quot;ECNU teacher&quot; -i &quot;4&quot; -f &quot;E:/DeskDocument/Application_Layer/SourceFiles/1.txt&quot;</code></p>
+<div class="center">
+
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-a</td>
+<td>全网所有的属性</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>文件上传者定义的文件访问策略</td>
+</tr>
+<tr>
+<td>-i</td>
+<td>上传一条倒排索引的索引值（只上传一个关键词）</td>
+</tr>
+<tr>
+<td>-f</td>
+<td>上传一条倒排索引的文件列表</td>
+</tr>
+</tbody></table>
+</div>
+
+<p><strong>运行结果</strong>：</p>
+<ol>
+<li><p>在与FilesUploader.jar同一目录下的 SerializedData&#x2F;SearchableEncryption 生成 InvertedIndex.ser 这个加密索引</p>
+</li>
+<li><p>将要上传的文件进行加密，放在 .&#x2F;UploadFiles 目录下</p>
+</li>
+</ol>
+<h3 id="FilesSeacher-jar"><a href="#FilesSeacher-jar" class="headerlink" title="FilesSeacher.jar"></a>FilesSeacher.jar</h3><p><strong>命令行</strong>： <code>java -jar FilesSeacher.jar -a &quot;ECNU teacher doctor master bachelor 2016 2015 2014&quot; -s &quot;ECNU teacher&quot; -w &quot;4&quot;</code></p>
+<div class="center">
+
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-a</td>
+<td>全网所有的属性</td>
+</tr>
+<tr>
+<td>-s</td>
+<td>文件搜索者自身拥有的属性</td>
+</tr>
+<tr>
+<td>-w</td>
+<td>搜索关键词（只搜索一个关键词）</td>
+</tr>
+</tbody></table>
+</div>
+
+<p><strong>运行结果</strong>：<br>在 SerializedData&#x2F;SearchableEncryption 目录下生成文件搜索者的 UserToken.ser，后续将其发送给网络节点执行搜索操作</p>
+<h3 id="NodeSeach-jar"><a href="#NodeSeach-jar" class="headerlink" title="NodeSeach.jar"></a>NodeSeach.jar</h3><p><strong>命令行</strong>： <code>java -jar NodeSearch.jar</code></p>
+<p><strong>运行结果</strong>：<br>用户上传的 UserToken.ser 若可以查找到 InvertedIndex.ser，返回 have found；否则，返回 not found，若返回 have found，网络节点就可以把该条索引对应的密文文件返回给文件搜索者</p>
+<h3 id="DecFiles-jar"><a href="#DecFiles-jar" class="headerlink" title="DecFiles.jar"></a>DecFiles.jar</h3><p><strong>命令行</strong>： <code>java -jar DecFiles.jar -s &quot;ECNU teacher&quot; -e &quot;./DownloadFiles/1.txt&quot;</code></p>
+<div class="center">
+
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-s</td>
+<td>文件搜索者自身拥有的属性</td>
+</tr>
+<tr>
+<td>-e</td>
+<td>加密文件路径（不止一个）</td>
+</tr>
+</tbody></table>
+</div>
+
+<p><strong>运行结果</strong>：<br>文件搜索者接收到的密文文件放置在 .&#x2F;DownloadFiles 目录下，将密文文件进行解密，明文文件放在 .&#x2F;PlainFiles 目录下</p>
+<hr>
+<h1 id="参考文章："><a href="#参考文章：" class="headerlink" title="参考文章："></a>参考文章：</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_40279192/article/details/120970286">https://blog.csdn.net/qq_40279192/article/details/120970286</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/HLchaochao/article/details/111832381">https://blog.csdn.net/HLchaochao/article/details/111832381</a></p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/07/08/Software-supply-chain-security/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2022-11-25 10:59:32
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86/" title="可搜索加密">
+                        <b>#</b> 可搜索加密
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/08/20/Common-attack-tools-Commands/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E9%93%BA%E5%9E%AB%E7%9F%A5%E8%AF%86"><span class="toc-text">1. 铺垫知识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E5%9F%BA%E4%BA%8E%E8%BA%AB%E4%BB%BD%E7%9A%84%E5%8A%A0%E5%AF%86-Identity-Based-Encryption%EF%BC%8CIBE"><span class="toc-text">1.1 基于身份的加密(Identity-Based Encryption，IBE)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-1-%E6%A6%82%E5%BF%B5"><span class="toc-text">1.1.1 概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-2-%E7%AE%97%E6%B3%95"><span class="toc-text">1.1.2 算法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E5%9F%BA%E4%BA%8E%E8%A7%92%E8%89%B2%E7%9A%84%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6-Role-Based-Access-Control%EF%BC%8CRBA"><span class="toc-text">1.2 基于角色的访问控制(Role-Based Access Control，RBA)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-1-%E6%A6%82%E5%BF%B5"><span class="toc-text">1.2.1 概念</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-%E5%9F%BA%E4%BA%8E%E5%B1%9E%E6%80%A7%E7%9A%84%E5%8A%A0%E5%AF%86-Attribute-based-encryption%EF%BC%8CABE"><span class="toc-text">1.3 基于属性的加密(Attribute-based encryption，ABE)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-1-%E6%A6%82%E5%BF%B5"><span class="toc-text">1.3.1 概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-2-KP-ABE%E6%96%B9%E6%A1%88"><span class="toc-text">1.3.2 KP-ABE方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-3-CP-ABE"><span class="toc-text">1.3.3 CP-ABE</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%9F%BA%E4%BA%8E%E5%B1%9E%E6%80%A7%E7%9A%84%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86%EF%BC%88%E5%86%85%E5%B5%8CCP-ABE%E6%A8%A1%E5%9D%97%EF%BC%89"><span class="toc-text">2. 基于属性的可搜索加密（内嵌CP-ABE模块）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#PubAndMskGenerate-jar"><span class="toc-text">PubAndMskGenerate.jar</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FilesUploader-jar"><span class="toc-text">FilesUploader.jar</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FilesSeacher-jar"><span class="toc-text">FilesSeacher.jar</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NodeSeach-jar"><span class="toc-text">NodeSeach.jar</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DecFiles-jar"><span class="toc-text">DecFiles.jar</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0%EF%BC%9A"><span class="toc-text">参考文章：</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="rss" href="/atom.xml">
+            <i class="iconfont icon-rss"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E5%9F%BA%E4%BA%8E%E5%B1%9E%E6%80%A7%E7%9A%84%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86 + '&url=' + https%3A%2F%2Fmagi2b0y.github.io%2F2022%2F08%2F13%2FAttribute-based_searchable_encryption%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://magi2b0y.github.io/2022/08/13/Attribute-based_searchable_encryption/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

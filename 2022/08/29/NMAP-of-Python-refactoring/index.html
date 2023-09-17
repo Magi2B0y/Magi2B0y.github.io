@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="Magi2B0y" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      利用python重构NMAP的服务版本扫描模块 
+      
+      
+      |
+    
+     Hexo
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img no-lazy src="/images/cat-avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">MagicBoy</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">利用python重构NMAP的服务版本扫描模块</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-02-02 15:58:36
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Python/" title="Python">
+                    <b>#</b> Python
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <style>
+.center 
+{
+  width: auto;
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+<h1 id="1-NMAP-扫描原理"><a href="#1-NMAP-扫描原理" class="headerlink" title="1. NMAP 扫描原理"></a>1. NMAP 扫描原理</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">NMAP 服务与版本扫描命令：</span><br><span class="line">-sV: 指定让Nmap进行版本侦测</span><br><span class="line"> </span><br><span class="line">–version-intensity&lt;level&gt;: 指定版本侦测强度（0-9），默认为7。数值越高，探测出的服务越准确，但是运行时间会比较长。</span><br><span class="line"></span><br><span class="line">–version-light: 指定使用轻量侦测方式 (intensity 2)</span><br><span class="line"> </span><br><span class="line">–version-all: 尝试使用所有的probes进行侦测 (intensity 9)</span><br><span class="line"> </span><br><span class="line">–version-trace: 显示出详细的版本侦测过程信息。</span><br></pre></td></tr></table></figure>
+
+
+<p>扫描原理是服务指纹（或称签名）对比匹配。Nmap内部包含了几千种常见服务指纹的数据库（nmap-service-probes），对目标端口进行连接通信，产生当前端口的服务指纹，再与指纹数据库对比，寻找出匹配的服务类型。</p>
+<p>服务与版本侦测主要分为以下几个步骤：</p>
+<ol>
+<li><p>首先检查open与open|filtered状态的端口是否在排除端口列表内。如果在排除列表，将该端口剔除。</p>
+</li>
+<li><p>如果是TCP端口，尝试建立TCP连接。尝试等待片刻（通常6秒或更多，具体时间可以查询文件nmap-services-probes中ProbeTCP NULL q||对应的totalwaitms）。通常在等待时间内，会接收到目标机发送的“Welcome Banner”信息。nmap将接收到的Banner与nmap-services-probes中NULLprobe中的签名进行对比。查找对应应用程序的名字与版本信息。</p>
+</li>
+<li><p>如果通过“Welcome Banner”无法确定应用程序版本，那么nmap再尝试发送其他的探测包（即从nmap-services-probes中挑选合适的probe），将probe得到回复包与数据库中的签名进行对比。如果反复探测都无法得出具体应用，那么打印出应用返回报文，让用户自行进一步判定。</p>
+</li>
+<li><p>如果是UDP端口，那么直接使用nmap-services-probes中探测包进行探测匹配。根据结果对比分析出UDP应用服务类型。</p>
+</li>
+<li><p>如果探测到应用程序是SSL，那么调用openSSL进一步的侦查运行在SSL之上的具体的应用类型。</p>
+</li>
+<li><p>如果探测到应用程序是SunRPC，那么调用brute-forceRPC grinder进一步探测具体服务。</p>
+</li>
+</ol>
+<h1 id="2-NMAP-实现框架"><a href="#2-NMAP-实现框架" class="headerlink" title="2. NMAP 实现框架"></a>2. NMAP 实现框架</h1><h2 id="2-1-文件组织"><a href="#2-1-文件组织" class="headerlink" title="2.1. 文件组织"></a>2.1. 文件组织</h2><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>service_scan.cc&#x2F;service_scan.h</td>
+<td>服务扫描的核心功能都在此两个文件中实现，文件结构清晰简洁，代码行数总共3000余行。与端口扫描部分类似，服务扫描也定义了不少类与接口函数。</td>
+</tr>
+<tr>
+<td>nmap-service-probes</td>
+<td>此文件是nmap服务扫描所需的数据库文件，包括定制的探测包及预期的回复包，及识别服务类型的具体匹配方式。</td>
+</tr>
+<tr>
+<td>nsock library</td>
+<td>服务与版本扫描部分用到nsock库，该库设计用于并发处理网络事件。在Nmap源码树下，有单独的nsock目录来管理nsock库。此处我们仅需要关注nsock.h文件中提供的API函数即可。</td>
+</tr>
+</tbody></table>
+<p>下面摘取 nmap-service-probes 的片段，简单了解其结构</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Probe TCPNULL q||</span><br><span class="line"> </span><br><span class="line"># Wait forat least 6 seconds for data.  It used tobe 5, but some</span><br><span class="line"> </span><br><span class="line"># smtpservices have lately been instituting an artificial pause (see</span><br><span class="line"> </span><br><span class="line">#FEATURE(&#x27;greet_pause&#x27;) in Sendmail, for example)</span><br><span class="line"> </span><br><span class="line">totalwaitms6000</span><br><span class="line"> </span><br><span class="line">match 1c-server m|^S\xf5\xc6\x1a&#123;|p/1C:Enterprise business management server/</span><br><span class="line"> </span><br><span class="line">match4d-server m|^\0\0\0H\0\0\0\x02.[^\0]*\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0$|sp/4th Dimension database server/</span><br><span class="line"> </span><br><span class="line">match acapm|^\* ACAP IMPLEMENTATION&quot;CommuniGateProACAP(\d[?.\w]+)&quot;IMPLEMENTATION&quot;CommuniGateProACAP(\d[?.\w]+)&quot; |p/CommuniGate Pro ACAP server/ v/$1/ i/for mail client preference sharing/</span><br><span class="line"> </span><br><span class="line">match acmpm|^ACMP Server Version ([\w._-]+)\r\n| p/Aagon ACMP Inventory/ v/$1/</span><br><span class="line"> </span><br><span class="line">matchactivemq m|^\0\0\0.\x01ActiveMQ\0\0\0|s p/Apache ActiveMQ/</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>第一行Probe关键字表示定义一个探测包，其类型为TCP，名字为NULL，探测字符串为空（q||）。以#开头为注释行，为读者提供参考信息。随后定义默认服务等待时间<code>totalwaims 6000</code>，即6秒钟。后面的match行，定义服务匹配的情况，即在此条件下认为此端口是运行的具体服务类型。match行的格式如下： <code>match []</code></p>
+<p>service为服务名称，pattern为匹配的模式（正则表达式），versioninfo为该服务对应的版本信息。这里以 <code>match 1c-server m|^S\xf5\xc6\x1a&#123;| p/1C:Enterprise business management server/</code>为例，当使用NULL探测包获取的返回包中包含：<code>m|^S\xf5\xc6\x1a&#123;|</code>模式（该正则表达式含义：以字符S开头，紧随其后三个字符\xf5\xc6\x1a）时，并且从提取出厂商产品名字与<code>1C:Enterprise businessmanagement server</code>相符，那么判断该服务为<code>1c-server</code>。</p>
+<h2 id="2-2-核心类分析"><a href="#2-2-核心类分析" class="headerlink" title="2.2. 核心类分析"></a>2.2. 核心类分析</h2><p>服务扫描过程中，主要构建了5个类，分别描述不同层次的数据类型。下面我们将以宏观到微观的思路，依次查看每个类的结构与用法。</p>
+<table>
+<thead>
+<tr>
+<th>类</th>
+<th>结构与用法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ServiceGroup</td>
+<td>从整理的角度管理服务扫描过程</td>
+</tr>
+<tr>
+<td>ServiceNFO</td>
+<td>具体的负责管理每一种服务扫描过程</td>
+</tr>
+<tr>
+<td>AllProbes</td>
+<td>负责管理所有用于服务扫描的探测包</td>
+</tr>
+<tr>
+<td>ServiceProbe</td>
+<td>描述每一个进行服务探测的探测包细节（对应nmap-service-probes中描述的探测包）</td>
+</tr>
+<tr>
+<td>ServiceProbeMatch</td>
+<td>描述探测包的匹配类型（每一个ServiceProbe可能包含多种匹配类型）</td>
+</tr>
+</tbody></table>
+<h3 id="2-2-1-ServiceGroup"><a href="#2-2-1-ServiceGroup" class="headerlink" title="2.2.1. ServiceGroup"></a>2.2.1. ServiceGroup</h3><p>ServiceGroup用于管理一组目标机进行服务扫描的信息。这个类非常重要，负责统一管理其他具体的信息：如单个服务扫描信息（ServiceNFO）、全部探测包信息（AllProbes）、服务探测包信息（ServiceProbe）等等。</p>
+<p>该类主要包含以下具体内容：</p>
+<ol>
+<li><p>扫描完成的服务列表services_finished，记录目前已经扫描完毕的服务。</p>
+</li>
+<li><p>正在扫描的服务列表services_in_progress。多个服务可能在同时并发地被探测，所以此处将当前正在扫描的服务全部记录在该列表中。</p>
+</li>
+<li><p>剩余服务列表services_remaining，当前还没有开始探测的服务被放置在该列表中。在服务扫描初始化时，所有的服务都被放置在列表中。</p>
+</li>
+<li><p>最大的并发探测包ideal_parallelism，用于确定同时发送服务探测包的并发数量，此值取决于用户配置的时序参数和具体网卡的支持能力等因素。若配置时序为-T4，那么会将ideal_parallelism设置40。</p>
+</li>
+<li><p>扫描进度测量器ScanProgressMeter，用于记录服务扫描的进度情况，以便能够实时地反馈给用户。在控制台界面按下普通按键（如按下空格键，不包括 “vVdDp?” 字符，这几个字符有特殊含义），Nmap会打印出当前的扫描进度。</p>
+</li>
+<li><p>超时主机的数量，记录当前扫描超时的主机数量。</p>
+</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// This holds theservice information for a group of Targets being service scanned.</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ServiceGroup</span> &#123;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"> </span><br><span class="line">  <span class="built_in">ServiceGroup</span>(vector&lt;Target *&gt;&amp;Targets, AllProbes *AP);</span><br><span class="line"> </span><br><span class="line">  ~<span class="built_in">ServiceGroup</span>();</span><br><span class="line"> </span><br><span class="line">  list&lt;ServiceNFO *&gt; services_finished;<span class="comment">// Services finished (discovered or not)</span></span><br><span class="line"> </span><br><span class="line">  list&lt;ServiceNFO *&gt;services_in_progress; <span class="comment">// Services currently being probed</span></span><br><span class="line"> </span><br><span class="line">  list&lt;ServiceNFO *&gt; services_remaining;<span class="comment">// Probes not started yet</span></span><br><span class="line"> </span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> ideal_parallelism; <span class="comment">// Max (anddesired) number of probes out at once.</span></span><br><span class="line"> </span><br><span class="line">  ScanProgressMeter *SPM;</span><br><span class="line"> </span><br><span class="line">  <span class="type">int</span> num_hosts_timedout; <span class="comment">// # of hosts timedout during (or before) scan</span></span><br><span class="line"> </span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-2-ServiceNFO"><a href="#2-2-2-ServiceNFO" class="headerlink" title="2.2.2. ServiceNFO"></a>2.2.2. ServiceNFO</h3><p>ServiceNFO负责管理特定的服务的探测细节。上述的ServiceGroup中就是管理ServiceNFO对象组成的列表。</p>
+<p>ServiceNFO类包含以下信息：</p>
+<ol>
+<li><p>服务指纹的管理（提供添加与获取等操作）</p>
+</li>
+<li><p>服务扫描对应的主机（Target *target）</p>
+</li>
+<li><p>服务探测匹配的信息（是否匹配、是否softmatch、ssl配置、产品、版本、CPE等信息）</p>
+</li>
+<li><p>管理探测包（服务扫描过程可能需要发送多个探测包，在此对当前探测包、下一个探测包<br>进行管理）</p>
+</li>
+<li><p>管理回复包（提供添加与获取等操作）。</p>
+</li>
+<li><p>服务扫描所需的全部探测包 AllProbes *AP;</p>
+</li>
+</ol>
+<h3 id="2-2-3-AllProbes"><a href="#2-2-3-AllProbes" class="headerlink" title="2.2.3. AllProbes"></a>2.2.3. AllProbes</h3><p>AllProbes负责管理全部的服务探测包（Probes）。该类的对象从nmap-service-probes数据库文件中解析出探测包及匹配方式等信息，将之管理起来。在后续服务扫描时，在此对象中来按需取出探测包发送即可。</p>
+<p>AllProbes负责管理全部的服务探测包（Probes）。该类的对象从nmap-service-probes数据库文件中解析出探测包及匹配方式等信息，将之管理起来。在后续服务扫描时，在此对象中来按需取出探测包发送即可。</p>
+<ol>
+<li><p>探测包管理（探测包向量std::vectorprobes、NULL探测包等）</p>
+</li>
+<li><p>编制回退数组（compileFallbacks），当回复包无法匹配当前字符串时，允许回退到上一次匹配字符串。</p>
+</li>
+<li><p>管理排除端口列表。在nmap-service-probes中指定需排除的服务扫描，默认排除TCP的9100-9107端口，此类打印机服务会返回大量的无用信息。</p>
+</li>
+<li><p>服务初始化接口与释放接口。</p>
+</li>
+</ol>
+<h3 id="2-2-4-ServiceProbe"><a href="#2-2-4-ServiceProbe" class="headerlink" title="2.2.4. ServiceProbe"></a>2.2.4. ServiceProbe</h3><p>ServiceProbe负责管理单个的服务探测包的详细信息。服务探测包具体的信息来自nmap-service-probes数据库文件，当AllProbes类在初始化时会读取该文件，并依据其每个探测信息创建ServiceProbe对象，放置在AllProbes内部的向量std::vectorprobes中。</p>
+<p>该类主要包含以下内容：</p>
+<ol>
+<li><p>探测包名字，比如探测包名字叫NULL或GenericLines等等。</p>
+</li>
+<li><p>探测包字符串及字符串长度。非NULL探测包都包含探测需要字符串，所以此处对该信息进行管理。例如，对于探测包：Probe TCP GenericLinesq|\r\n\r\n|，其探测字符串为\r\n\r\n。</p>
+</li>
+<li><p>允许的端口及SSL端口。除NULL外，探测包通常只会针对特定的端口扫描才有效，所以此处即管理该探测包允许的扫描的端口。</p>
+</li>
+<li><p>探测包的协议类型probeprotocol，只能是TCP或UDP。</p>
+</li>
+<li><p>可被探测的服务类型detectedServices。与允许端口类似，探测包可能只能用于某些特定的服务的探测，所以此处统一管理能被探测的服务类型。</p>
+</li>
+<li><p>服务探测包匹配管理。该类中使用向量std::vector matches来管理此服务探测包可能会匹配的情况，匹配情况对应到nmap-service-probes中的match与softmatch行。</p>
+</li>
+<li><p>探测回退数组（fallback array）的管理，此对应到AllProbes中compileFallbacks()函数，此处管理具体的服务探测包进行回退的数组。数组结构：ServiceProbe*fallbacks[MAXFALLBACKS+1];</p>
+</li>
+<li><p>测试是否匹配，此接口函数用于测试某个回复包是否与预期结果匹配。</p>
+</li>
+<li><p>其他接口函数，管理其他普通信息。</p>
+</li>
+</ol>
+<h3 id="2-2-5-ServiceProbeMatch"><a href="#2-2-5-ServiceProbeMatch" class="headerlink" title="2.2.5. ServiceProbeMatch"></a>2.2.5. ServiceProbeMatch</h3><p>ServiceProbeMatch用于管理特定的服务探测包的匹配信息（match）。nmap-service-probes文件中每一个match和softmatch行都对应到该类的对象。</p>
+<p>该类信息比较丰富，以下仅简要描述：</p>
+<ol>
+<li><p>探测包匹配详细信息（版本、产品、CPE等等）</p>
+</li>
+<li><p>探测匹配情况（匹配类型、匹配字符串、正则表达式等等）</p>
+</li>
+<li><p>测试是否匹配接口函数。若匹配成功，返回详细的服务与版本信息。</p>
+</li>
+</ol>
+<h2 id="2-3-代码流程"><a href="#2-3-代码流程" class="headerlink" title="2.3. 代码流程"></a>2.3. 代码流程</h2><p>在nmap.cc文件的nmap_main()函数中，如果配置了服务扫描，那么调用service_scan()函数（位于service_scan.cc文件中）。服务扫描的内容主要在service_scan()函数中完成。</p>
+<p>service_scan()函数比较简洁，只有120多行代码。因为服务扫描涉及到具体详细的操作都封装到类或其他的静态非成员函数中了，而并发处理网络事件部分调用nsock库来处理。</p>
+<p><strong>NMAP 服务与版本扫描详细过程：</strong></p>
+<div class="center">
+<img src="./NMAP-of-Python-refactoring/2.3-2.png">
+</div>
+
+<p><strong>流程解析：</strong></p>
+<ol>
+<li><p>首先在nmap_main()中将扫描目标机传入service_scan()函数中，以便根据目标机端口状态来筛选需要扫描的服务。</p>
+</li>
+<li><p>然后，在AllProbes:: service_scan_init()读取nmap-service-probes文件，解析出被排除的端口、扫描过程需要的探测包、探测包匹配等详细信息。将信息存放在AllProbes对象内。</p>
+</li>
+<li><p>随后，根据Targets和AllProbes创建服务组对象（ServiceGroup），从Targets中解析出开放的端口与处于open|filtered状态的端口，创建对应的ServiceNFO对象，该服务等待被扫描。并创建扫描进度测量器，以便后续打印出扫描进度；确定最佳的扫描并发度ideal_parallelism。</p>
+</li>
+<li><p>然后，确定排除端口。默认情况下，排除nmap-service-probes中指定的端口Exclude T:9100-9107；而如果用户命令行指定–all-ports，那么不排除Exclude指定的端口。</p>
+</li>
+<li><p>为每个目标机设置超时时钟，获取当前时间。</p>
+</li>
+<li><p>然后开始进入关键环节，创建nsock pool，即nsock处理并发探测包的事件池。在创建nsock pool后，服务扫描才能使用nsock建立连接并注册事件。</p>
+</li>
+<li><p>根据用户需求，设置服务扫描的trace信息。</p>
+</li>
+<li><p>若配置了openssl时，将其速度设置为最大。因为对于服务扫描，仅关心端口的服务类型，不必在安全性花费过多时间。</p>
+</li>
+<li><p>然后开始启动少量的服务探测包（launchSomeServiceProbes）。根据前述步骤得出的服务探测包，创建nsock niod（io描述符，类似于文件描述符，管理输入输出），完成地址等信息配置，然后建立TCP连接或UDP连接，在建立连接后向nsock pool注册事件。此后，该连接的事件将交给nsock loop来统一处理。</p>
+</li>
+<li><p>创建nsock主循环（nsock_loop），在此循环中来接收网络事件（例如接收到回复包），调用相应的处理函数对事件响应（函数servicescan_read_handler()、servicescan_write_handler()、servicescan_connect_handler()）。在处理函数中，扫描完成了某些服务后，会再调用launchSomeServiceProbes()函数加载剩余的服务进来扫描，以此整个服务扫描过程就被有序地连接起来了。</p>
+</li>
+<li><p>当nsock循环退出，检查是否有错，并删除nsock pool对象。</p>
+</li>
+<li><p>打印出调试信息，处理最终扫描结果。</p>
+</li>
+</ol>
+<p><strong>源码注释：</strong></p>
+<div class="center">
+<img src="./NMAP-of-Python-refactoring/2.3-1.png">
+</div>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Execute a service fingerprinting scan against all open ports of the</span></span><br><span class="line"><span class="comment">   Targets specified. */</span></span><br><span class="line"><span class="comment">///针对指定目标机的开放的端口进行服务指纹扫描，</span></span><br><span class="line"><span class="comment">///此处会用到Nmap的nsock库（并发的Socket Event处理库）</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">service_scan</span><span class="params">(vector&lt;Target *&gt; &amp;Targets)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// int service_scan(Target *targets[], int num_targets)</span></span><br><span class="line">  AllProbes *AP;</span><br><span class="line">  ServiceGroup *SG;</span><br><span class="line">  nsock_pool nsp;</span><br><span class="line">  <span class="keyword">struct</span> <span class="title class_">timeval</span> now;</span><br><span class="line">  <span class="type">int</span> timeout;</span><br><span class="line">  <span class="keyword">enum</span> <span class="title class_">nsock_loopstatus</span> looprc;</span><br><span class="line">  <span class="keyword">struct</span> <span class="title class_">timeval</span> starttv;</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span> (Targets.<span class="built_in">size</span>() == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"> </span><br><span class="line">  AP = AllProbes::<span class="built_in">service_scan_init</span>();<span class="comment">///获取AllProbes对象,AllProbes仅维护一个Static对象</span></span><br><span class="line">  <span class="comment">///在service_scan_init()中将读取nmap-service-probes文件，解析出需要的探测包,并存放在</span></span><br><span class="line">  <span class="comment">///AllProbes中std::vector&lt;ServiceProbe *&gt; probes向量中。</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">  <span class="comment">// Now I convert the targets into a new ServiceGroup</span></span><br><span class="line">  <span class="comment">///使用Targets向量与AllProbes创建服务组ServiceGroup,从Targets中提取open端口及</span></span><br><span class="line">  <span class="comment">///open|filtered端口，放入services_remaining等待进行服务扫描。</span></span><br><span class="line">  <span class="comment">///在创建服务组时，确定出服务扫描的最佳并发度ideal_parallelism</span></span><br><span class="line">  SG = <span class="keyword">new</span> <span class="built_in">ServiceGroup</span>(Targets, AP);</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span> (o.override_excludeports) &#123;</span><br><span class="line">    <span class="comment">///覆盖被排除端口，当命令行中指定--all-ports时会走到此分支。</span></span><br><span class="line">    <span class="comment">///被排除的端口是指在nmap-service-probes文件用Exclude指令定义的端口。</span></span><br><span class="line">    <span class="keyword">if</span> (o.debugging || o.verbose) <span class="built_in">log_write</span>(LOG_PLAIN, <span class="string">&quot;Overriding exclude ports option! Some undesirable ports may be version scanned!\n&quot;</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">///从ServiceGroup中移除被排除的端口,Nmap默认会排出掉9100-9107与打印机相关的服务，</span></span><br><span class="line">    <span class="comment">///因为此类服务只是简单返回Nmap发送过去的探测包，会产生大量的垃圾的流量。</span></span><br><span class="line">    <span class="comment">///默认情况下在nmap-service-probes文件头部定义：Exclude T:9100-9107</span></span><br><span class="line">    <span class="built_in">remove_excluded_ports</span>(AP, SG);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">///为所有需要进行服务扫描的主机设置超时值</span></span><br><span class="line">  <span class="built_in">startTimeOutClocks</span>(SG);</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span> (SG-&gt;services_remaining.<span class="built_in">size</span>() == <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">delete</span> SG;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">  <span class="built_in">gettimeofday</span>(&amp;starttv, <span class="literal">NULL</span>);</span><br><span class="line">  <span class="keyword">if</span> (o.verbose) &#123;</span><br><span class="line">    <span class="type">char</span> targetstr[<span class="number">128</span>];</span><br><span class="line">    <span class="type">bool</span> plural = (Targets.<span class="built_in">size</span>() != <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (!plural) &#123;</span><br><span class="line">      (*(Targets.<span class="built_in">begin</span>()))-&gt;<span class="built_in">NameIP</span>(targetstr, <span class="built_in">sizeof</span>(targetstr));</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="built_in">Snprintf</span>(targetstr, <span class="built_in">sizeof</span>(targetstr), <span class="string">&quot;%u hosts&quot;</span>, (<span class="type">unsigned</span>) Targets.<span class="built_in">size</span>());</span><br><span class="line"> </span><br><span class="line">    <span class="built_in">log_write</span>(LOG_STDOUT, <span class="string">&quot;Scanning %u %s on %s\n&quot;</span>,</span><br><span class="line">          (<span class="type">unsigned</span>) SG-&gt;services_remaining.<span class="built_in">size</span>(),</span><br><span class="line">          (SG-&gt;services_remaining.<span class="built_in">size</span>() == <span class="number">1</span>)? <span class="string">&quot;service&quot;</span> : <span class="string">&quot;services&quot;</span>,</span><br><span class="line">          targetstr);</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">  <span class="comment">// Lets create a nsock pool for managing all the concurrent probes</span></span><br><span class="line">  <span class="comment">// Store the servicegroup in there for availability in callbacks</span></span><br><span class="line">  <span class="comment">///创建nsock pool，以使用nsock并发控制探测包</span></span><br><span class="line">  <span class="keyword">if</span> ((nsp = <span class="built_in">nsp_new</span>(SG)) == <span class="literal">NULL</span>) &#123;</span><br><span class="line">    <span class="built_in">fatal</span>(<span class="string">&quot;%s() failed to create new nsock pool.&quot;</span>, __func__);</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">  <span class="comment">///根据用户指定的packettrace配置，设置nsock的trace级别</span></span><br><span class="line">  <span class="keyword">if</span> (o.<span class="built_in">versionTrace</span>()) &#123;</span><br><span class="line">    <span class="built_in">nsp_settrace</span>(nsp, <span class="literal">NULL</span>, NSOCK_TRACE_LEVEL, o.<span class="built_in">getStartTime</span>());</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">#<span class="keyword">if</span> HAVE_OPENSSL</span></span><br><span class="line">  <span class="comment">/* We don&#x27;t care about connection security in version detection. */</span></span><br><span class="line">  <span class="comment">///配置SSL时，关注传输速度，而不关注安全性本身，以加速服务扫描过程。</span></span><br><span class="line">  <span class="built_in">nsp_ssl_init_max_speed</span>(nsp);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"> </span><br><span class="line">  <span class="comment">///从service_remaining列表中找出满足条件的等待探测服务，对之进行配置，</span></span><br><span class="line">  <span class="comment">///创建nsock文件描述符(niod)，并通过nsock建立连接（如nsock_connect_tcp()），</span></span><br><span class="line">  <span class="comment">///并将此探测服务移动到services_in_progress列表中。</span></span><br><span class="line">  <span class="built_in">launchSomeServiceProbes</span>(nsp, SG);</span><br><span class="line"> </span><br><span class="line">  <span class="comment">// How long do we have before timing out?</span></span><br><span class="line">  <span class="built_in">gettimeofday</span>(&amp;now, <span class="literal">NULL</span>);</span><br><span class="line">  timeout = <span class="number">-1</span>;</span><br><span class="line"> </span><br><span class="line">  <span class="comment">// OK!  Lets start our main loop!</span></span><br><span class="line">  <span class="comment">///nsock主循环，在此循环内处理各种探测包的事件(nsock event)</span></span><br><span class="line">  <span class="comment">///在上述的launchSomeServiceProbes操作中，调用到nsock_connect_tcp/udp/sctp等，</span></span><br><span class="line">  <span class="comment">///最终执行nsp_add_event函数向nsock pool添加等待处理的事件。</span></span><br><span class="line">  looprc = <span class="built_in">nsock_loop</span>(nsp, timeout);</span><br><span class="line">  <span class="keyword">if</span> (looprc == NSOCK_LOOP_ERROR) &#123;</span><br><span class="line">    <span class="type">int</span> err = <span class="built_in">nsp_geterrorcode</span>(nsp);</span><br><span class="line">    <span class="built_in">fatal</span>(<span class="string">&quot;Unexpected nsock_loop error.  Error code %d (%s)&quot;</span>, err, <span class="built_in">strerror</span>(err));</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">///退出主循环后，删除nsock pool</span></span><br><span class="line">  <span class="built_in">nsp_delete</span>(nsp);</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span> (o.verbose) &#123;</span><br><span class="line">    <span class="type">char</span> additional_info[<span class="number">128</span>];</span><br><span class="line">    <span class="keyword">if</span> (SG-&gt;num_hosts_timedout == <span class="number">0</span>)</span><br><span class="line">      <span class="built_in">Snprintf</span>(additional_info, <span class="built_in">sizeof</span>(additional_info), <span class="string">&quot;%u %s on %u %s&quot;</span>,</span><br><span class="line">        (<span class="type">unsigned</span>) SG-&gt;services_finished.<span class="built_in">size</span>(),  </span><br><span class="line">        (SG-&gt;services_finished.<span class="built_in">size</span>() == <span class="number">1</span>)? <span class="string">&quot;service&quot;</span> : <span class="string">&quot;services&quot;</span>,</span><br><span class="line">        (<span class="type">unsigned</span>) Targets.<span class="built_in">size</span>(), (Targets.<span class="built_in">size</span>() == <span class="number">1</span>)? <span class="string">&quot;host&quot;</span> : <span class="string">&quot;hosts&quot;</span>);</span><br><span class="line">    <span class="keyword">else</span> <span class="built_in">Snprintf</span>(additional_info, <span class="built_in">sizeof</span>(additional_info), <span class="string">&quot;%u %s timed out&quot;</span>,</span><br><span class="line">           SG-&gt;num_hosts_timedout,</span><br><span class="line">           (SG-&gt;num_hosts_timedout == <span class="number">1</span>)? <span class="string">&quot;host&quot;</span> : <span class="string">&quot;hosts&quot;</span>);</span><br><span class="line">    SG-&gt;SPM-&gt;<span class="built_in">endTask</span>(<span class="literal">NULL</span>, additional_info);</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">  <span class="comment">// Yeah - done with the service scan.  Now I go through the results</span></span><br><span class="line">  <span class="comment">// discovered, store the important info away, and free up everything</span></span><br><span class="line">  <span class="comment">// else.</span></span><br><span class="line">  <span class="comment">///对服务扫描结果的处理</span></span><br><span class="line">  <span class="built_in">processResults</span>(SG);</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">delete</span> SG;</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="3-python重构思路"><a href="#3-python重构思路" class="headerlink" title="3. python重构思路"></a>3. python重构思路</h1><p>模仿nmap的识别思路，流程如下：</p>
+<ol start="0">
+<li><p>为了利用 nmap 指纹库方便，先将 nmap-service-probes 转化为一个 json 文件</p>
+</li>
+<li><p>只与端口建立 TCP 连接，不发信息，利用 TCP NULL 探针，根据目标端口返回的 Banner 信息，利用 nmap 指纹库中的正则去匹配返回版本</p>
+</li>
+<li><p>若第一步失败，利用TCP的其他探针，首先判断目标端口是否存在于指纹库一个探针的 ports 列表里，若存在，给端口发送消息（ probestring 中的内容），根据返回回来的消息，用此探针下的各种 matches 正则去匹配，匹配成功，返回该条 match 下的 name ，若都匹配失败，就更换TCP探针，直至匹配成功或全部匹配失败</p>
+</li>
+</ol>
+<div class="center">
+<img src="./NMAP-of-Python-refactoring/3-1.png">
+</div>
+
+<ol start="3">
+<li><p>与端口建立 UDP 连接，思路与第二步类似，也是直至其中一个匹配成功或全部匹配失败，在代码实现部分只改变socket连接方式即可</p>
+</li>
+<li><p>应用程序是 SSL 的情况包含在了第二步和第三步当中，将 sslports 字段中的内容也添加进端口列表，看被查询端口是否存在于端口列表中，进而进行探针探查</p>
+</li>
+</ol>
+<h1 id="4-python重构遇到的问题"><a href="#4-python重构遇到的问题" class="headerlink" title="4. python重构遇到的问题"></a>4. python重构遇到的问题</h1><h2 id="4-1-已解决"><a href="#4-1-已解决" class="headerlink" title="4.1. 已解决"></a>4.1. 已解决</h2><blockquote>
+<p><strong>Q：</strong> socket 与端口建立 TCP 连接后，会一直等待端口返回的消息，若无返回消息，socket 就会一直等到端口主动断连</p>
+</blockquote>
+<p><strong>A：</strong> 使用 socket.settimeout() 函数，等待一段时间后主动断连</p>
+<blockquote>
+<p><strong>Q：</strong> socket 向80端口发送消息，端口不予回应</p>
+</blockquote>
+<p><strong>A：</strong> 第一步：json文件里的 ports 字段用的是<code>80-85</code>端口，对代码有影响；第二步：网上脚本转换成的json文件里，probestring字段的内容会有转义字符，如 <code>\\r\\n\\r\\n</code> ，这些信息在python里转化为 byte 类型后，也会是<code>\\r\\n\\r\\n</code>，这样80端口无法识别报文体，不满足 HTTP 协议，所以不反回消息，将<code>&quot;probestring&quot;: GET / HTTP/1.0\\r\\n\\r\\n</code> 变为 <code>&quot;probestring&quot;: GET / HTTP/1.0\r\n\r\n</code>即可，其他相关的probestring类似</p>
+<blockquote>
+<p><strong>Q：</strong> 有些 probestring 的内容是十六进制，形如<code>&quot;probestring&quot;: &quot;\\x02\\x60&quot;</code>，一旦将转义字符删掉，json文件会报错</p>
+</blockquote>
+<p><strong>A：</strong> 在 python 文件里利用 repr() 和 eval() 函数，将字符串转化后处理，再恢复原始即可</p>
+<h2 id="4-2-未解决"><a href="#4-2-未解决" class="headerlink" title="4.2. 未解决"></a>4.2. 未解决</h2><blockquote>
+<p>笔者利用 nmap 的指纹库里的正则去匹配版本号，匹配效果不尽人意，3306 端口会匹配到所有返回消息（包括很多UTF-8无法编码的字符），80 端口会匹配到所有返回报文，笔者只能通过自己写的正则去匹配，但很难做到适用所有情况，只能用如下正则 <code>\d+\.(?:\d+\.)*\d+</code> 去匹配 <code>XX.XX.XX</code> 样式的版本号，非常简陋，所以笔者认为nmap会有其他的操作去处理返回结果，匹配出完整的版本号</p>
+</blockquote>
+<blockquote>
+<p>第二步很多端口无法用探针匹配到，比如25，135，139等，所以第二步的扫描结果是比较失败的，最后一步还是要靠调用 python 的 nmap 库才能完成指定端口的扫描</p>
+</blockquote>
+<h1 id="5-实现结果"><a href="#5-实现结果" class="headerlink" title="5. 实现结果"></a>5. 实现结果</h1><p><strong><a target="_blank" rel="noopener" href="https://github.com/Magi2B0y/NMAP-of-Python-refactoring">https://github.com/Magi2B0y/NMAP-of-Python-refactoring</a></strong></p>
+<hr>
+<h1 id="参考文章："><a href="#参考文章：" class="headerlink" title="参考文章："></a>参考文章：</h1><p><strong>NMAP原理：</strong></p>
+<p><a target="_blank" rel="noopener" href="https://www.codenong.com/cs106947616/">https://www.codenong.com/cs106947616/</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/liun1994/p/6985796.html">https://www.cnblogs.com/liun1994/p/6985796.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/wwl012345/article/details/96427974">https://blog.csdn.net/wwl012345/article/details/96427974</a></p>
+<p><strong>NMAP 指纹库解析：</strong></p>
+<p><a target="_blank" rel="noopener" href="https://nmap.org/book/vscan-fileformat.html">https://nmap.org/book/vscan-fileformat.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/liun1994/p/6986544.html">https://www.cnblogs.com/liun1994/p/6986544.html</a></p>
+<p><strong>nmap-service-probes 的JSON转化：</strong></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zpchcbd/p/15221460.html">https://www.cnblogs.com/zpchcbd/p/15221460.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://x.hacking8.com/post-418.html">https://x.hacking8.com/post-418.html</a></p>
+<hr>
+<p>ENDฅฅ</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/08/20/Common-attack-tools-Commands/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-02-02 15:58:36
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Python/" title="Python">
+                        <b>#</b> Python
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/09/02/Penetration-experience-summary/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-NMAP-%E6%89%AB%E6%8F%8F%E5%8E%9F%E7%90%86"><span class="toc-text">1. NMAP 扫描原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-NMAP-%E5%AE%9E%E7%8E%B0%E6%A1%86%E6%9E%B6"><span class="toc-text">2. NMAP 实现框架</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E6%96%87%E4%BB%B6%E7%BB%84%E7%BB%87"><span class="toc-text">2.1. 文件组织</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E6%A0%B8%E5%BF%83%E7%B1%BB%E5%88%86%E6%9E%90"><span class="toc-text">2.2. 核心类分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-1-ServiceGroup"><span class="toc-text">2.2.1. ServiceGroup</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-2-ServiceNFO"><span class="toc-text">2.2.2. ServiceNFO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-3-AllProbes"><span class="toc-text">2.2.3. AllProbes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-4-ServiceProbe"><span class="toc-text">2.2.4. ServiceProbe</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-5-ServiceProbeMatch"><span class="toc-text">2.2.5. ServiceProbeMatch</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-%E4%BB%A3%E7%A0%81%E6%B5%81%E7%A8%8B"><span class="toc-text">2.3. 代码流程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-python%E9%87%8D%E6%9E%84%E6%80%9D%E8%B7%AF"><span class="toc-text">3. python重构思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-python%E9%87%8D%E6%9E%84%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">4. python重构遇到的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-%E5%B7%B2%E8%A7%A3%E5%86%B3"><span class="toc-text">4.1. 已解决</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-%E6%9C%AA%E8%A7%A3%E5%86%B3"><span class="toc-text">4.2. 未解决</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E5%AE%9E%E7%8E%B0%E7%BB%93%E6%9E%9C"><span class="toc-text">5. 实现结果</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0%EF%BC%9A"><span class="toc-text">参考文章：</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="rss" href="/atom.xml">
+            <i class="iconfont icon-rss"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E5%88%A9%E7%94%A8python%E9%87%8D%E6%9E%84NMAP%E7%9A%84%E6%9C%8D%E5%8A%A1%E7%89%88%E6%9C%AC%E6%89%AB%E6%8F%8F%E6%A8%A1%E5%9D%97 + '&url=' + https%3A%2F%2Fmagi2b0y.github.io%2F2022%2F08%2F29%2FNMAP-of-Python-refactoring%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://magi2b0y.github.io/2022/08/29/NMAP-of-Python-refactoring/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

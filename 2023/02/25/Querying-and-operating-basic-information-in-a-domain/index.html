@@ -11,7 +11,7 @@
   
   <title>
     
-      归档 
+      域内基本信息查询及操作 
       
       
       |
@@ -106,192 +106,153 @@
 
 
       <div class="flex-container">
-        <!-- 归档页，展示本站所有文章，按照年份降序归类，url形式：https://yoursite/archives/ -->
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
 
-<!-- last: 按年份把文章分组，当前遍历到的年份 -->
-<!-- now: 当前遍历到的文章的发布年份 -->
 
-<div class="container archives">
-  <div class="post-list">
-    
-        <!-- 后续文章的发布年份呈现 -->
-        <div class="content-title">
-          <h2>
-            <span>2023</span>
-          </h2>
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">域内基本信息查询及操作</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-03-10 00:25:40
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" title="网络安全">
+                    <b>#</b> 网络安全
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="1-判断当前所在域"><a href="#1-判断当前所在域" class="headerlink" title="1. 判断当前所在域"></a>1. 判断当前所在域</h1><p>查看计算机名、全名、用户名、系统版本、工作站、域、登录域: <code>net config workstation</code> </p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/1.png"></p>
+<h1 id="2-查看域信任关系"><a href="#2-查看域信任关系" class="headerlink" title="2. 查看域信任关系"></a>2. 查看域信任关系</h1><p>域内用户信息查询等操作，只有system权限用户和域用户才有权限执行。</p>
+<p><code>nltest /domain_trusts</code></p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/2.png"></p>
+<h1 id="3-查看本机-域用户列表"><a href="#3-查看本机-域用户列表" class="headerlink" title="3. 查看本机&#x2F;域用户列表"></a>3. 查看本机&#x2F;域用户列表</h1><p><code>net user</code> 查看本机的用户账户</p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/3-1.png"></p>
+<p><code>net user /domain</code> 或 <code>net time /domain</code> 查看域控主机的用户账户和其他用户列表</p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/3-2.png"></p>
+<h1 id="4-确定域控主机名称及IP"><a href="#4-确定域控主机名称及IP" class="headerlink" title="4. 确定域控主机名称及IP"></a>4. 确定域控主机名称及IP</h1><p>利用nslookup或者ping可解析IP</p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/4.png"></p>
+<h1 id="5-查看域里面的工作组，把用户分成了哪些组"><a href="#5-查看域里面的工作组，把用户分成了哪些组" class="headerlink" title="5. 查看域里面的工作组，把用户分成了哪些组"></a>5. 查看域里面的工作组，把用户分成了哪些组</h1><p><code>net group /domain</code></p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/5.png"></p>
+<h1 id="6-查看域中分组信息"><a href="#6-查看域中分组信息" class="headerlink" title="6. 查看域中分组信息"></a>6. 查看域中分组信息</h1><p>查看域中Domain Admins组，<code>net group &quot;Domain Admins&quot; /domain</code></p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/6-1.png"></p>
+<p><code>net group &quot;Domain Computers&quot; /domain</code></p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/6-2.png"></p>
+<p><code>net group &quot;Domain Controllers&quot; /domain</code></p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/6-3.png"></p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/02/25/learn-file-upload-vulnerability/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-03-10 00:25:40
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" title="网络安全">
+                        <b>#</b> 网络安全
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/02/27/learn-file-include-vulnerability/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
         </div>
       
-      <div class="post-item" title="分组密码的工作模式">
-        <div class="time-m-d">03-02</div>
-        <div class="title">
-          <a href="/2023/03/02/Working-mode-of-block-password/">
-            <span>分组密码的工作模式</span>
-          </a>
-        </div>
-      </div>
+    </div>
     
-      <div class="post-item" title="学习文件包含漏洞">
-        <div class="time-m-d">02-27</div>
-        <div class="title">
-          <a href="/2023/02/27/learn-file-include-vulnerability/">
-            <span>学习文件包含漏洞</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="域内基本信息查询及操作">
-        <div class="time-m-d">02-25</div>
-        <div class="title">
-          <a href="/2023/02/25/Querying-and-operating-basic-information-in-a-domain/">
-            <span>域内基本信息查询及操作</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="学习文件上传漏洞">
-        <div class="time-m-d">02-25</div>
-        <div class="title">
-          <a href="/2023/02/25/learn-file-upload-vulnerability/">
-            <span>学习文件上传漏洞</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="重新认识SQL注入">
-        <div class="time-m-d">02-18</div>
-        <div class="title">
-          <a href="/2023/02/18/Relearn-sql-injection/">
-            <span>重新认识SQL注入</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="git学习">
-        <div class="time-m-d">02-15</div>
-        <div class="title">
-          <a href="/2023/02/15/git-learn/">
-            <span>git学习</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="论文学习(Efficient Attribute-Based Searchable Encryption on the Cloud Storage)">
-        <div class="time-m-d">01-31</div>
-        <div class="title">
-          <a href="/2023/01/31/Efficient-Attribute-Based-Searchable-Encryption-on-the-Cloud-Storage/">
-            <span>论文学习(Efficient Attribute-Based Searchable Encryption on the Cloud Storage)</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="学习HTTP请求包中的Content-Type参数">
-        <div class="time-m-d">01-26</div>
-        <div class="title">
-          <a href="/2023/01/26/Learn-Content-Type-parameter/">
-            <span>学习HTTP请求包中的Content-Type参数</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="利用Burpsuit的Repeater模块构造请求数据包">
-        <div class="time-m-d">01-26</div>
-        <div class="title">
-          <a href="/2023/01/26/Construct-the-packets-by-using-repeater-module-of-Burpsuit/">
-            <span>利用Burpsuit的Repeater模块构造请求数据包</span>
-          </a>
-        </div>
-      </div>
-    
-        <!-- 后续文章的发布年份呈现 -->
-        <div class="content-title">
-          <h2>
-            <span>2022</span>
-          </h2>
-        </div>
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
       
-      <div class="post-item" title="Kerberos协议学习">
-        <div class="time-m-d">11-01</div>
-        <div class="title">
-          <a href="/2022/11/01/Kerberos-protocol-learning/">
-            <span>Kerberos协议学习</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="CSRF、SSRF和会话重放">
-        <div class="time-m-d">09-29</div>
-        <div class="title">
-          <a href="/2022/09/29/XSS-CSRF-SSRF-and-Session_replay/">
-            <span>CSRF、SSRF和会话重放</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="渗透经验总结">
-        <div class="time-m-d">09-02</div>
-        <div class="title">
-          <a href="/2022/09/02/Penetration-experience-summary/">
-            <span>渗透经验总结</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="利用python重构NMAP的服务版本扫描模块">
-        <div class="time-m-d">08-29</div>
-        <div class="title">
-          <a href="/2022/08/29/NMAP-of-Python-refactoring/">
-            <span>利用python重构NMAP的服务版本扫描模块</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="常用攻击工具命令">
-        <div class="time-m-d">08-20</div>
-        <div class="title">
-          <a href="/2022/08/20/Common-attack-tools-Commands/">
-            <span>常用攻击工具命令</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="基于属性的可搜索加密">
-        <div class="time-m-d">08-13</div>
-        <div class="title">
-          <a href="/2022/08/13/Attribute-based_searchable_encryption/">
-            <span>基于属性的可搜索加密</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="软件供应链安全">
-        <div class="time-m-d">07-08</div>
-        <div class="title">
-          <a href="/2022/07/08/Software-supply-chain-security/">
-            <span>软件供应链安全</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="机器学习--KNN算法">
-        <div class="time-m-d">06-30</div>
-        <div class="title">
-          <a href="/2022/06/30/Machine_Learning--KNN_algorithm/">
-            <span>机器学习--KNN算法</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="Hello World">
-        <div class="time-m-d">04-08</div>
-        <div class="title">
-          <a href="/2022/04/08/hello-world/">
-            <span>Hello World</span>
-          </a>
-        </div>
-      </div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E5%88%A4%E6%96%AD%E5%BD%93%E5%89%8D%E6%89%80%E5%9C%A8%E5%9F%9F"><span class="toc-text">1. 判断当前所在域</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E6%9F%A5%E7%9C%8B%E5%9F%9F%E4%BF%A1%E4%BB%BB%E5%85%B3%E7%B3%BB"><span class="toc-text">2. 查看域信任关系</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E6%9F%A5%E7%9C%8B%E6%9C%AC%E6%9C%BA-%E5%9F%9F%E7%94%A8%E6%88%B7%E5%88%97%E8%A1%A8"><span class="toc-text">3. 查看本机&#x2F;域用户列表</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E7%A1%AE%E5%AE%9A%E5%9F%9F%E6%8E%A7%E4%B8%BB%E6%9C%BA%E5%90%8D%E7%A7%B0%E5%8F%8AIP"><span class="toc-text">4. 确定域控主机名称及IP</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E6%9F%A5%E7%9C%8B%E5%9F%9F%E9%87%8C%E9%9D%A2%E7%9A%84%E5%B7%A5%E4%BD%9C%E7%BB%84%EF%BC%8C%E6%8A%8A%E7%94%A8%E6%88%B7%E5%88%86%E6%88%90%E4%BA%86%E5%93%AA%E4%BA%9B%E7%BB%84"><span class="toc-text">5. 查看域里面的工作组，把用户分成了哪些组</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E6%9F%A5%E7%9C%8B%E5%9F%9F%E4%B8%AD%E5%88%86%E7%BB%84%E4%BF%A1%E6%81%AF"><span class="toc-text">6. 查看域中分组信息</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
     
   </div>
-</div>
+
 
         
 <div class="footer">
@@ -546,6 +507,24 @@
 
 
         
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E5%9F%9F%E5%86%85%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF%E6%9F%A5%E8%AF%A2%E5%8F%8A%E6%93%8D%E4%BD%9C + '&url=' + https%3A%2F%2Fmagi2b0y.github.io%2F2023%2F02%2F25%2FQuerying-and-operating-basic-information-in-a-domain%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://magi2b0y.github.io/2023/02/25/Querying-and-operating-basic-information-in-a-domain/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
   
   
 <script src="/js/shares.js"></script>

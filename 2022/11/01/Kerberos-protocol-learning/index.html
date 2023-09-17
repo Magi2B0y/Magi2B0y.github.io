@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="Magi2B0y" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      Kerberos协议学习 
+      
+      
+      |
+    
+     Hexo
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img no-lazy src="/images/cat-avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">MagicBoy</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Kerberos协议学习</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2022-11-02 18:06:46
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" title="网络安全">
+                    <b>#</b> 网络安全
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <style>
+.center 
+{
+  width: auto;
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>为什么要有Kerberos这样一个中央认证机制？</p>
+<p>假设有A，B，C三个服务器，分别提供不同的服务，user要访问ABC都需要输入用户名密码，但是ABC没必要都存一份user的密码，所以就衍生出一个中央服务器D来专门存储用户名密码；如果user通过了D的认证，那就是合法的身份，就可以使用ABC任何一个服务，所以user需要告诉ABC它通过了D的认证。如何证明这个事情，以及信息在网络传输过程如何防止被截获篡改而假冒等等，解决这些问题就靠kerberos。</p>
+<p>Kerberos是Windows域首选的一种认证协议，优于NTLM认证机制。虽然Kerberos认证机制较为复杂，但红队、渗透测试人员以及实际攻击者经常会用到该协议。理解Kerberos的工作原理非常重要，这样才能理解针对Kerberos的潜在攻击方式，澄清攻击者如何利用该协议攻击域环境。</p>
+<h1 id="2-概述"><a href="#2-概述" class="headerlink" title="2. 概述"></a>2. 概述</h1><p>Kerberos简单来说就是一个用于安全认证第三方协议，它采用了传统的共享密钥的方式，实现了在网络环境不一定保证安全的环境下，client和server之间的通信，适用于client&#x2F;server模型，由MIT开发和实现。</p>
+<p>Kerberos并不要求通信双方所在的网络环境是安全的，即使通信过程中数据被截取或者篡改依然不会影响它的正常工作，它提供的认证是双向的，不仅能保证Server不被错误的Client使用，同时也能保证Client不使用错误的Server。同时Kerberos又严重依赖于时间，时间戳也是Kerberos用来保证通信安全的重要手段，这个一般通过通信双方同时访问同一个时间服务器来实现。Kerberos也能达到单点登录的效果，即当Client通过了Kerberos server的认证后，便可以访问多个Real Server。 </p>
+<h1 id="3-原理"><a href="#3-原理" class="headerlink" title="3. 原理"></a>3. 原理</h1><h2 id="3-1-名词解释"><a href="#3-1-名词解释" class="headerlink" title="3.1. 名词解释"></a>3.1. 名词解释</h2><div class="center">
+
+<table>
+<thead>
+<tr>
+<th>名词</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>DC（Domain Controller）</td>
+<td>域控制器，一台计算机实现用户、计算机的统一管理</td>
+</tr>
+<tr>
+<td>KDC（key distribution center）</td>
+<td>是一个网络服务，提供ticket和临时会话密钥，是 Kerberos 的核心组件，主要由三个部分组成：<br> - Kerberos Database: 包含了一个 Realm 中所有的 principal、密码与其他信息。（默认：Berkeley DB）<br> - Authentication Service(AS): 进行用户信息认证，为客户端提供 Ticket Granting Tickets(TGT)<br> - Ticket Granting Service(TGS): 验证 TGT 与 Authenticator，为客户端提供 Service Tickets</td>
+</tr>
+<tr>
+<td>AS（Authentication Server）</td>
+<td>认证服务器</td>
+</tr>
+<tr>
+<td>TGS（Ticket Grantion Server）</td>
+<td>票据授权服务器</td>
+</tr>
+<tr>
+<td>TGT（Ticket-Granting-Ticket）</td>
+<td>票据授予票据</td>
+</tr>
+<tr>
+<td>TGS（Ticket-Granting Service）</td>
+<td>票据授予服务</td>
+</tr>
+<tr>
+<td>principal</td>
+<td>大致可以认为是 Kerberos 世界的用户名，用于标识身份。principal 主要由三部分构成：primary，instance(可选) 和 realm。包含 instance 的principal，一般会作为server端的principal，如：NameNode，HiverServer2，Presto Coordinator等；不含有 instance 的principal，一般会作为客户端的principal，用于身份认证</td>
+</tr>
+<tr>
+<td>realm name</td>
+<td>包含KDC和许多客户端的Kerberos网络，类似于域，俗称为领域；也是principal的一个“容器”或者“命名空间”。相对应的，principal的命名规则是”what_name_you_like@realm”。在kerberos，大家都约定俗成用大写来命名realm，比如“EXAMPLE.COM”</td>
+</tr>
+<tr>
+<td>password</td>
+<td>某个用户的密码，对应于kerberos中的master_key。password可以存在一个keytab文件中。所以kerberos中需要使用密码的场景都可以用一个keytab作为输入</td>
+</tr>
+<tr>
+<td>keytab</td>
+<td>keytab是包含principals和加密principal key的文件。keytab文件对于每个host是唯一的，因为key中包含hostname。keytab文件用于不需要人工交互和保存纯文本密码，实现到kerberos上验证一个主机上的principal。因为服务器上可以访问keytab文件即可以以principal的身份通过kerberos的认证，所以，keytab文件应该被妥善保存，应该只有少数的用户可以访问</td>
+</tr>
+<tr>
+<td>credential</td>
+<td>credential是“证明某个人确定是他自己&#x2F;某一种行为的确可以发生”的凭据。在不同的使用场景下，credential的具体含义也略有不同：对于某个principal个体而言，他的credential就是他的password；在kerberos认证的环节中，credential就意味着各种各样的ticket</td>
+</tr>
+<tr>
+<td>authenticator</td>
+<td>验证者，是服务器用于验证客户机用户主体的信息。验证者包含用户的主体名称、时间标记和其他数据。与票证不同，验证者只能使用一次，通常在请求访问服务时使用</td>
+</tr>
+<tr>
+<td>Ticket</td>
+<td>一个记录，客户用它来向服务器证明自己的身份，包括服务的主体名称、用户的主体名称、用户主机的ip地址、时间标记、会话密钥、定义票证生命周期的时间戳</td>
+</tr>
+</tbody></table>
+<h2 id="3-2-工作过程分析"><a href="#3-2-工作过程分析" class="headerlink" title="3.2. 工作过程分析"></a>3.2. 工作过程分析</h2><p>Client从KDC获取TGT，Client利用获取的TGT向KDC请求其他Service的Ticket（通过获取的session进行访问）。</p>
+<div class="center">
+<img src="./Kerberos-protocol-learning/3-2-1.png">
+</div>
+
+<p><strong>步骤详解：</strong></p>
+<p><strong>1. 客户端与 Authentication Server，获得TGT</strong></p>
+<p><strong>第一步</strong>，客户端通过kinit USERNAME或其他方式，将客户端ID, 目标HTTP服务ID, 网络地址（可能是多个机器的IP地址列表，如果想在任何机器上使用，则可能为空），以及TGT有效期的寿命等信息发送给 Authentication Server。</p>
+<p><strong>第二步</strong>，Authentication Server 将检查客户端ID是否在KDC数据库中。如果 Authentication Server 检查操作没有异常，那么KDC将随机生成一个 key，用于客户端与 Ticket Granting Server(TGS) 通信。这个Key，一般被称为 TGS Session Key。随后 Authentication Server 将发送两条信息给客户端：其中一条信息被称为TGT，由TGS的密钥加密，客户端无法解密，包含客户端ID, TGS Session Key等信息。另一条信息由客户端密钥加密，客户端可以正常解密，包含目标 HTTP 服务ID，TGS Session Key等信息。</p>
+<p><strong>第三步</strong>，客户端利用本地的密钥解密出第二条信息。如果本地密钥无法解密出信息，那么认证失败。</p>
+<p><strong>2. 客户端与 Ticket Granting Server，获得SGT</strong></p>
+<p>这时候，客户端有了 TGT（由于本地没有TGS的密钥，导致无法解密出其数据）与 TGS Session Key。</p>
+<p><strong>第四步</strong>，客户端将发送两条消息给TGS，一是“无脑”将 AS 发送过来的TGT（由TGS密钥加密）转发给TGS，二是将包含自身信息的Authenticator(由TGS Session Key加密)发送给TGS</p>
+<p><strong>第五步</strong>，TGS 将利用自身的密钥从TGT中解密出TGS Session Key，然后利用TGS Session Key从 Authenticator 中解密出客户端的信息。TGS 解密出所有信息后，将进行身份检查，进行认证：</p>
+<ul>
+<li>将客户端ID与TGT的客户端ID进行比较</li>
+<li>比较来自 Authenticator 的时间戳和TGT的时间戳 (典型的Kerberos系统的容忍度是2分钟，但也可以另行配置)</li>
+<li>检查TGT是否过期</li>
+<li>检查Authenticator是否已经在TGS的缓存中（为了避免重放攻击）</li>
+</ul>
+<p>当所有检查都通过后， TGS 随机生成一个 Key 用于后续客户端与 HTTP 服务交互时进行通信加密使用，即 HTTP Session Key。同样地，TGS 将发送两条信息给客户端: 其中一条是 HTTP Ticket（SGT），由 HTTP 服务的密钥进行加密；另一条则由TGS Session Key加密，包含了客户端信息与时间戳。</p>
+<p><strong>第六步</strong>，客户端将利用TGS Session Key解密出其中一条信息，另一条信息由于是由目标HTTP服务加密，无法解密。</p>
+<p><strong>3. 客户端与 HTTP Server，获得服务</strong></p>
+<p>这时候，客户端有了HTTP Ticket（由于本地没有HTTP服务的密钥，导致无法解密出其数据）与 HTTP Session Key。</p>
+<p><strong>第七步</strong>，客户端将发送两条信息给HTTP服务：一是“无脑”将 AS 发送过来的 HTTP Ticket（由HTTP 密钥加密）转发给目标 http 服务。二是将包含自身信息的Authenticator(由HTTP Session Key加密)发送给 http 服务。</p>
+<p><strong>第八步</strong>，HTTP服务首先利用自身的密钥解密出 HTTP Ticket 的信息，得到 HTTP Session Key；随后，利用HTTP Session Key解密出用户的Authenticator信息。信息解密完成后，HTTP 服务同样需要做一些信息检查：</p>
+<ul>
+<li>将 Authenticator 中的客户端ID与HTTP Ticket中的客户端ID进行比较</li>
+<li>比较来自 Authenticator 的时间戳和 HTTP Ticket 的时间戳 (典型的 Kerberos 系统对差异的容忍度是 2 分钟，但也可以另行配置)</li>
+<li>检查Ticket是否过期</li>
+<li>检查 Authenticator 是否已经在HTTP服务器的缓存中（为了避免重播攻击）</li>
+</ul>
+<p>至此，所有的认证过程通过，客户端即可与远程HTTP服务完成了身份认证，可以进行后续的信息通信。</p>
+<h1 id="4-存在漏洞"><a href="#4-存在漏洞" class="headerlink" title="4. 存在漏洞"></a>4. 存在漏洞</h1><h2 id="4-1-Kerberoasting"><a href="#4-1-Kerberoasting" class="headerlink" title="4.1. Kerberoasting"></a>4.1. Kerberoasting</h2><p>当发送TGS时，KDC会使用时间戳+服务账户的密码哈希来加密TGS。由于目标服务通常为计算机控制的某个服务（比如HOST或者CIFS），因此这里会使用主机账户密码哈希。在某些情况下，用户账户也会被创建为“服务账户”，注册为SPN。由于KDC不负责服务的授权工作（该工作由服务自己负责），因此任何用户都可以请求任何服务的TGS。这意味着如果某个用户“服务账户”被注册为SPN，那么任何用户都可以请求该用户对应的TGS，而该TGS使用用户账户密码哈希加密，攻击者可以从票据中提取哈希，离线破解。</p>
+<h2 id="4-2-黄金票据"><a href="#4-2-黄金票据" class="headerlink" title="4.2. 黄金票据"></a>4.2. 黄金票据</h2><p>当发送TGT时，该票据会使用KRBTGT的账户密码哈希来加密。KRBTGT的密码默认情况下不会被手动设置，因此与主机账户密码一样复杂。当攻击者成功获取KRBTGT密码，伪造TGT时，这种攻击技术称为黄金票据攻击。Mimikatz可以使用KRBTGT密码的RC4哈希来伪造任何用户的票据，并且该过程不需要知道用户密码。</p>
+<div class="center">
+<img src="./Kerberos-protocol-learning/4-3-1.png">
+</div>
+
+<h2 id="4-3-白银票据"><a href="#4-3-白银票据" class="headerlink" title="4.3. 白银票据"></a>4.3. 白银票据</h2><p>黄金票据对应的是TGT伪造，而白银票据则是TGS伪造。攻击者使用黄金票据时会有安全上的考虑：攻击过程涉及KDC，KDC会发布一个TGT，因此防御方可能会收到警报，捕捉到黄金票据攻击。白银票据更为隐蔽，攻击过程不涉及到KDC。由于这里伪造的是服务票据，因为攻击者需要知道目标服务的密码哈希，而大多数情况下，该哈希对应的是主机账户的密码哈希。对于设置了SPN的服务账户，攻击者也可以针对该SPN生成白银票据。</p>
+<p>举个例子，如果用户名MSSQLServiceAcct创建了一个服务账户，注册了MSSQLSVC主体，那么对应的SPN则为MSSQLSVC&#x2F;MSSQLServiceAcct。如果攻击者获取了账户的密码哈希（通过Kerberoasting或者其他方法），就可以利用该哈希来伪造针对该SPN的TGS，访问对应的服务（这里为MSSQLSVC）。</p>
+<p>对于某些服务（如CIFS），如果使用了用户账户来创建SPN（如CIFS&#x2F;Alice），此时攻击者无法使用该用户的密码来构造CIFS对应的白银票据，这是因为用户并不控制该服务的访问权限，这是主机账户负责的工作。</p>
+<div class="center">
+<img src="./Kerberos-protocol-learning/4-3-2.png">
+</div>
+
+<p>白银票据存在的安全风险在于，如果设置了PAC验证功能，票据就会发送到KDC进行验证，此时攻击将以失败告终。</p>
+<hr>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/266491528">https://zhuanlan.zhihu.com/p/266491528</a><br><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/200680">https://www.anquanke.com/post/id/200680</a> （含委派攻击）<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/luxianghao/p/5269739.html">https://www.cnblogs.com/luxianghao/p/5269739.html</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/swordfall/p/12009716.html">https://www.cnblogs.com/swordfall/p/12009716.html</a></p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/09/29/XSS-CSRF-SSRF-and-Session_replay/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2022-11-02 18:06:46
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" title="网络安全">
+                        <b>#</b> 网络安全
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/01/26/Construct-the-packets-by-using-repeater-module-of-Burpsuit/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E5%89%8D%E8%A8%80"><span class="toc-text">1. 前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E6%A6%82%E8%BF%B0"><span class="toc-text">2. 概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E5%8E%9F%E7%90%86"><span class="toc-text">3. 原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E5%90%8D%E8%AF%8D%E8%A7%A3%E9%87%8A"><span class="toc-text">3.1. 名词解释</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-%E5%B7%A5%E4%BD%9C%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90"><span class="toc-text">3.2. 工作过程分析</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E5%AD%98%E5%9C%A8%E6%BC%8F%E6%B4%9E"><span class="toc-text">4. 存在漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-Kerberoasting"><span class="toc-text">4.1. Kerberoasting</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-%E9%BB%84%E9%87%91%E7%A5%A8%E6%8D%AE"><span class="toc-text">4.2. 黄金票据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-%E7%99%BD%E9%93%B6%E7%A5%A8%E6%8D%AE"><span class="toc-text">4.3. 白银票据</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-text">参考文章</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="rss" href="/atom.xml">
+            <i class="iconfont icon-rss"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Kerberos%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0 + '&url=' + https%3A%2F%2Fmagi2b0y.github.io%2F2022%2F11%2F01%2FKerberos-protocol-learning%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://magi2b0y.github.io/2022/11/01/Kerberos-protocol-learning/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

@@ -11,7 +11,7 @@
   
   <title>
     
-      归档 
+      利用Burpsuit的Repeater模块构造请求数据包 
       
       
       |
@@ -106,192 +106,187 @@
 
 
       <div class="flex-container">
-        <!-- 归档页，展示本站所有文章，按照年份降序归类，url形式：https://yoursite/archives/ -->
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
 
-<!-- last: 按年份把文章分组，当前遍历到的年份 -->
-<!-- now: 当前遍历到的文章的发布年份 -->
 
-<div class="container archives">
-  <div class="post-list">
-    
-        <!-- 后续文章的发布年份呈现 -->
-        <div class="content-title">
-          <h2>
-            <span>2023</span>
-          </h2>
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">利用Burpsuit的Repeater模块构造请求数据包</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-02-02 13:26:36
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/" title="漏洞挖掘">
+                    <b>#</b> 漏洞挖掘
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <style>
+.center 
+{
+  width: auto;
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+<p>这里以通达OA 2016版的一个文件上传+文件包含漏洞为例，详细说明如何利用 Burpsuit 的 Repeater 模块构造请求数据包</p>
+<div class="center">
+<img src="./Construct-the-packets-by-using-repeater-module-of-Burpsuit/1.png">
+</div>
+
+<p>通达OA是由北京通达信科科技有限公司开发的一款办公系统，攻击者可在未授权的情况下可上传图片木马文件，之后通过精心构造的请求进行文件包含，实现远程命令执行，且攻击者无须登陆认证即可完成攻击</p>
+<p>包含漏洞的两个文件：</p>
+<ol>
+<li>文件上传：<code>webroot\ispirit\im\upload.php</code></li>
+<li>文件包含：<code>webroot\ispirit\interface\gateway.php</code></li>
+</ol>
+<p>首先在 Reaperter 模块复制目标URL：<code>http://192.168.227.129/ispirit/im/upload.php</code>，右键点击<code>Paste URL as request</code></p>
+<div class="center">
+<img src="./Construct-the-packets-by-using-repeater-module-of-Burpsuit/2.png">
+</div>
+
+<p>继续右键点击<code>Change request method</code>，将GET方法改为POST方法</p>
+<div class="center">
+<img src="./Construct-the-packets-by-using-repeater-module-of-Burpsuit/3.png">
+</div>
+
+<p>Send之后会显示<code>-ERR 用户未登录</code></p>
+<div class="center">
+<img src="./Construct-the-packets-by-using-repeater-module-of-Burpsuit/4.png">
+</div>
+
+<p>添加以下参数</p>
+<div class="center">
+<img src="./Construct-the-packets-by-using-repeater-module-of-Burpsuit/5.png">
+</div>
+
+<p>右键点击<code>Change body encoding</code>，将 Content-Type 修改为<code>Content-Type:multipart/form-data; boundary=XXX</code></p>
+<div class="center">
+<img src="./Construct-the-packets-by-using-repeater-module-of-Burpsuit/6.png">
+</div>
+
+<p><strong>PS</strong>：关于不同的 Content-Type，可以查看另一篇文章 <a href="../Learn-Content-Type-parameter/index.html">学习HTTP请求包中的Content-Type参数</a></p>
+<p>在POST数据后面后面继续添加要上传的文件内容，Send后成功返回OK</p>
+<div class="center">
+<img src="./Construct-the-packets-by-using-repeater-module-of-Burpsuit/7.png">
+</div>
+
+<p>成功上传图片。通达OA默认上传位置：<code>myoa/attach/im</code>，则上面的完整路劲为:<code>myoa/attach/im/2301/1277314394.jpg</code></p>
+<p>复制URL：<code>http://192.168.227.129/ispirit/interface/gateway.php</code> ,构造POST请求包，进行文件包含操作，解析出一句话木马，payload为<code>json=&#123;&quot;url&quot;:&quot;/general/../../attach/im/2301/1277314394.jpg&quot;&#125;</code>，成功解析</p>
+<div class="center">
+<img src="./Construct-the-packets-by-using-repeater-module-of-Burpsuit/8.png">
+</div>
+
+<p>解析后的木马文件的位置为<code>http://192.168.227.129/ispirit/interface/bbskali.php</code>，蚁剑连接</p>
+<div class="center">
+<img src="./Construct-the-packets-by-using-repeater-module-of-Burpsuit/9.png">
+</div>
+
+<hr>
+<p><strong>参考文章</strong>：</p>
+<p><a target="_blank" rel="noopener" href="https://www.adminxe.com/1003.html">https://www.adminxe.com/1003.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1921368">https://cloud.tencent.com/developer/article/1921368</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Article-kelp/p/14726217.html">https://www.cnblogs.com/Article-kelp/p/14726217.html</a></p>
+<hr>
+<p>ENDฅฅ</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/11/01/Kerberos-protocol-learning/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-02-02 13:26:36
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/" title="漏洞挖掘">
+                        <b>#</b> 漏洞挖掘
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/01/26/Learn-Content-Type-parameter/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
         </div>
       
-      <div class="post-item" title="分组密码的工作模式">
-        <div class="time-m-d">03-02</div>
-        <div class="title">
-          <a href="/2023/03/02/Working-mode-of-block-password/">
-            <span>分组密码的工作模式</span>
-          </a>
-        </div>
-      </div>
+    </div>
     
-      <div class="post-item" title="学习文件包含漏洞">
-        <div class="time-m-d">02-27</div>
-        <div class="title">
-          <a href="/2023/02/27/learn-file-include-vulnerability/">
-            <span>学习文件包含漏洞</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="域内基本信息查询及操作">
-        <div class="time-m-d">02-25</div>
-        <div class="title">
-          <a href="/2023/02/25/Querying-and-operating-basic-information-in-a-domain/">
-            <span>域内基本信息查询及操作</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="学习文件上传漏洞">
-        <div class="time-m-d">02-25</div>
-        <div class="title">
-          <a href="/2023/02/25/learn-file-upload-vulnerability/">
-            <span>学习文件上传漏洞</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="重新认识SQL注入">
-        <div class="time-m-d">02-18</div>
-        <div class="title">
-          <a href="/2023/02/18/Relearn-sql-injection/">
-            <span>重新认识SQL注入</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="git学习">
-        <div class="time-m-d">02-15</div>
-        <div class="title">
-          <a href="/2023/02/15/git-learn/">
-            <span>git学习</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="论文学习(Efficient Attribute-Based Searchable Encryption on the Cloud Storage)">
-        <div class="time-m-d">01-31</div>
-        <div class="title">
-          <a href="/2023/01/31/Efficient-Attribute-Based-Searchable-Encryption-on-the-Cloud-Storage/">
-            <span>论文学习(Efficient Attribute-Based Searchable Encryption on the Cloud Storage)</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="学习HTTP请求包中的Content-Type参数">
-        <div class="time-m-d">01-26</div>
-        <div class="title">
-          <a href="/2023/01/26/Learn-Content-Type-parameter/">
-            <span>学习HTTP请求包中的Content-Type参数</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="利用Burpsuit的Repeater模块构造请求数据包">
-        <div class="time-m-d">01-26</div>
-        <div class="title">
-          <a href="/2023/01/26/Construct-the-packets-by-using-repeater-module-of-Burpsuit/">
-            <span>利用Burpsuit的Repeater模块构造请求数据包</span>
-          </a>
-        </div>
-      </div>
-    
-        <!-- 后续文章的发布年份呈现 -->
-        <div class="content-title">
-          <h2>
-            <span>2022</span>
-          </h2>
-        </div>
-      
-      <div class="post-item" title="Kerberos协议学习">
-        <div class="time-m-d">11-01</div>
-        <div class="title">
-          <a href="/2022/11/01/Kerberos-protocol-learning/">
-            <span>Kerberos协议学习</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="CSRF、SSRF和会话重放">
-        <div class="time-m-d">09-29</div>
-        <div class="title">
-          <a href="/2022/09/29/XSS-CSRF-SSRF-and-Session_replay/">
-            <span>CSRF、SSRF和会话重放</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="渗透经验总结">
-        <div class="time-m-d">09-02</div>
-        <div class="title">
-          <a href="/2022/09/02/Penetration-experience-summary/">
-            <span>渗透经验总结</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="利用python重构NMAP的服务版本扫描模块">
-        <div class="time-m-d">08-29</div>
-        <div class="title">
-          <a href="/2022/08/29/NMAP-of-Python-refactoring/">
-            <span>利用python重构NMAP的服务版本扫描模块</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="常用攻击工具命令">
-        <div class="time-m-d">08-20</div>
-        <div class="title">
-          <a href="/2022/08/20/Common-attack-tools-Commands/">
-            <span>常用攻击工具命令</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="基于属性的可搜索加密">
-        <div class="time-m-d">08-13</div>
-        <div class="title">
-          <a href="/2022/08/13/Attribute-based_searchable_encryption/">
-            <span>基于属性的可搜索加密</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="软件供应链安全">
-        <div class="time-m-d">07-08</div>
-        <div class="title">
-          <a href="/2022/07/08/Software-supply-chain-security/">
-            <span>软件供应链安全</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="机器学习--KNN算法">
-        <div class="time-m-d">06-30</div>
-        <div class="title">
-          <a href="/2022/06/30/Machine_Learning--KNN_algorithm/">
-            <span>机器学习--KNN算法</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="Hello World">
-        <div class="time-m-d">04-08</div>
-        <div class="title">
-          <a href="/2022/04/08/hello-world/">
-            <span>Hello World</span>
-          </a>
-        </div>
-      </div>
+
     
   </div>
-</div>
+
 
         
 <div class="footer">
@@ -546,6 +541,24 @@
 
 
         
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E5%88%A9%E7%94%A8Burpsuit%E7%9A%84Repeater%E6%A8%A1%E5%9D%97%E6%9E%84%E9%80%A0%E8%AF%B7%E6%B1%82%E6%95%B0%E6%8D%AE%E5%8C%85 + '&url=' + https%3A%2F%2Fmagi2b0y.github.io%2F2023%2F01%2F26%2FConstruct-the-packets-by-using-repeater-module-of-Burpsuit%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://magi2b0y.github.io/2023/01/26/Construct-the-packets-by-using-repeater-module-of-Burpsuit/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
   
   
 <script src="/js/shares.js"></script>

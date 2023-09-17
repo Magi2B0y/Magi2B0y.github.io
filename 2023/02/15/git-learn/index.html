@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="Magi2B0y" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      git学习 
+      
+      
+      |
+    
+     Hexo
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img no-lazy src="/images/cat-avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">MagicBoy</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">git学习</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-02-18 21:56:34
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" title="基础知识">
+                    <b>#</b> 基础知识
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="1-pull-request-同步原仓库"><a href="#1-pull-request-同步原仓库" class="headerlink" title="1. pull request 同步原仓库"></a>1. pull request 同步原仓库</h1><ol>
+<li><p>创建分支：<code>git branch test/update-readme</code></p>
+</li>
+<li><p>切换分支：<code>git checkout test/update-readme</code></p>
+</li>
+</ol>
+<blockquote>
+<p>前两行代码可合并为 git checkout -b test&#x2F;update-readme</p>
+</blockquote>
+<ol start="3">
+<li>查看远程分支状态：<code>git remote -v </code></li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">origin  git@github.com:dengjiawen8955/pr-test.git (fetch)</span><br><span class="line">origin  git@github.com:dengjiawen8955/pr-test.git (push)</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><p>添加一个新的upstream 分支 指向「原仓库」地址：<code>git remote add upstream https://github.com/bmft-team/pr-test.git</code></p>
+</li>
+<li><p>确认是否添加成功：<code>git remote -v</code></p>
+</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">origin  git@github.com:dengjiawen8955/pr-test.git (fetch)</span><br><span class="line">origin  git@github.com:dengjiawen8955/pr-test.git (push)</span><br><span class="line">upstream        https://github.com/bmft-team/pr-test.git (fetch)</span><br><span class="line">upstream        https://github.com/bmft-team/pr-test.git (push)</span><br></pre></td></tr></table></figure>
+
+
+<ol start="6">
+<li>从「原仓库」拉取最新的代码：<code>git fetch upstream</code></li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">remote: Enumerating objects: 6, done.</span><br><span class="line">remote: Counting objects: 100% (6/6), done.</span><br><span class="line">remote: Compressing objects: 100% (3/3), done.</span><br><span class="line">remote: Total 4 (delta 0), reused 0 (delta 0), pack-reused 0</span><br><span class="line">Unpacking objects: 100% (4/4), 1.33 KiB | 47.00 KiB/s, done.</span><br><span class="line">From https://github.com/bmft-team/pr-test</span><br><span class="line"> * [new branch]      master     -&gt; upstream/master </span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li>查看自己所在的分支：<code>git branch</code></li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">  master</span><br><span class="line">* test/update-readme</span><br></pre></td></tr></table></figure>
+
+<ol start="8">
+<li>合并 upstream 分支到 master 分支：<code>git merge upstream/master</code></li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Updating e2b016c..774d228</span><br><span class="line">Fast-forward</span><br><span class="line"> API.md | 1 +</span><br><span class="line"> 1 file changed, 1 insertion(+)</span><br><span class="line"> create mode 100644 API.md</span><br></pre></td></tr></table></figure>
+
+<ol start="9">
+<li>将 master 分支合并到 test&#x2F;update-readme 分支（此时你的分支为test&#x2F;update-readme）：<code>git merge master</code></li>
+</ol>
+<blockquote>
+<p>6 7 8 9 步骤可以合并为一步 git pull upstream upstream的x分支<br>含义: 将远程upstream仓库的x分支合并到当前分支</p>
+</blockquote>
+<ol start="10">
+<li>提交代码</li>
+</ol>
+<p><code>git add .</code><br><code>git commit -m &quot;update README.md and sync the source repository&quot;</code><br><code>git push origin test/update-readme</code></p>
+<p>ps:<br><code>git branch -a  //查看本地分支及远程分支</code><br><code>git branch -D featuer   //删除本地 featuer 分支</code></p>
+<h1 id="2-git-配置全局设置"><a href="#2-git-配置全局设置" class="headerlink" title="2. git 配置全局设置"></a>2. git 配置全局设置</h1><p>配置http代理</p>
+<p><code>git config --global http.proxy 127.0.0.1:7890</code><br><code>git config --global https.proxy 127.0.0.1:7890</code></p>
+<p>取消配置http代理</p>
+<p><code>git config --global --unset http.proxy</code><br><code>git config --global --unset https.proxy</code></p>
+<p>配置socks5代理</p>
+<p><code>git config --global http.proxy socks5 127.0.0.1:7890</code><br><code>git config --global https.proxy socks5 127.0.0.1:7890</code></p>
+<h1 id="3-更改-github-账号后-push-出现的问题"><a href="#3-更改-github-账号后-push-出现的问题" class="headerlink" title="3. 更改 github 账号后 push 出现的问题"></a>3. 更改 github 账号后 push 出现的问题</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Enumerating objects: 12, done.</span><br><span class="line">Counting objects: 100% (12/12), done.</span><br><span class="line">Delta compression using up to 16 threads</span><br><span class="line">Compressing objects: 100% (7/7), done.</span><br><span class="line">Writing objects: 100% (9/9), 301.45 KiB | 30.14 MiB/s, done.</span><br><span class="line">Total 9 (delta 1), reused 1 (delta 0), pack-reused 0</span><br><span class="line">remote: Resolving deltas: 100% (1/1), completed with 1 local object.</span><br><span class="line">To https://github.com/Thunderinmoonlight/diSE.git</span><br><span class="line"> ! [remote rejected] main -&gt; main (permission denied)</span><br><span class="line">error: failed to push some refs to &#x27;https://github.com/Thunderinmoonlight/diSE.git&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>切换账号信息</p>
+<p><code>git config --global user.name &quot;xxx&quot; //切换用户名</code><br><code>git config --global user.email &quot;xxx&quot; //切换邮箱</code><br><code>git config user.name //查看用户名</code></p>
+<p>配置凭据以使用完整的存储库路径(而不是仅使用默认设置-域)</p>
+<p><code>git config --global credential.useHttpPath true</code></p>
+<p>之后出现的弹窗按要求操作即可完成push</p>
+<h1 id="4-git-回滚操作"><a href="#4-git-回滚操作" class="headerlink" title="4. git 回滚操作"></a>4. git 回滚操作</h1><p><code>git log  //查看提交历史，找出要回滚到的commit-id</code><br><code>git reset --hard commit-id</code>  或者  <code>git reset --hard HEAD~1  //将最近1次的提交回滚</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">--hard      清空所有修改,删除本地数据</span><br><span class="line">--soft      将之前提交的内容恢复到暂存区,不会修改本地文件</span><br><span class="line">--mixed     将之前提交的内容恢复到未暂存状态,不会修改本地文件 (默认)</span><br></pre></td></tr></table></figure>
+<p>此时本地代码落后于远程代码，如果需要将回滚后的本地代码Push到远程代码仓，需要使用–force以强制Push到远程代码仓<br><code>git push --force  </code></p>
+<blockquote>
+<p>其他的用到再做笔记</p>
+</blockquote>
+<hr>
+<h1 id="参考文章："><a href="#参考文章：" class="headerlink" title="参考文章："></a>参考文章：</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/jarvan5/article/details/111387361">https://blog.csdn.net/jarvan5/article/details/111387361</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/QH_JAVA/article/details/77969010">https://blog.csdn.net/QH_JAVA/article/details/77969010</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34821328/article/details/115126422">https://blog.csdn.net/qq_34821328/article/details/115126422</a></p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/01/31/Efficient-Attribute-Based-Searchable-Encryption-on-the-Cloud-Storage/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-02-18 21:56:34
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" title="基础知识">
+                        <b>#</b> 基础知识
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/02/18/Relearn-sql-injection/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-pull-request-%E5%90%8C%E6%AD%A5%E5%8E%9F%E4%BB%93%E5%BA%93"><span class="toc-text">1. pull request 同步原仓库</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-git-%E9%85%8D%E7%BD%AE%E5%85%A8%E5%B1%80%E8%AE%BE%E7%BD%AE"><span class="toc-text">2. git 配置全局设置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E6%9B%B4%E6%94%B9-github-%E8%B4%A6%E5%8F%B7%E5%90%8E-push-%E5%87%BA%E7%8E%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">3. 更改 github 账号后 push 出现的问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-git-%E5%9B%9E%E6%BB%9A%E6%93%8D%E4%BD%9C"><span class="toc-text">4. git 回滚操作</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0%EF%BC%9A"><span class="toc-text">参考文章：</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="rss" href="/atom.xml">
+            <i class="iconfont icon-rss"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + git%E5%AD%A6%E4%B9%A0 + '&url=' + https%3A%2F%2Fmagi2b0y.github.io%2F2023%2F02%2F15%2Fgit-learn%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://magi2b0y.github.io/2023/02/15/git-learn/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

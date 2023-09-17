@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="Magi2B0y" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      论文学习(Efficient Attribute-Based Searchable Encryption on the Cloud Storage) 
+      
+      
+      |
+    
+     Hexo
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img no-lazy src="/images/cat-avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">MagicBoy</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">论文学习(Efficient Attribute-Based Searchable Encryption on the Cloud Storage)</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-02-02 13:24:36
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86/" title="可搜索加密">
+                    <b>#</b> 可搜索加密
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>分析一下这篇论文提出的算法：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Guo W F, Dong X L, Cao Z F, et al. Efficient attribute-based searchable encryption on cloud storage[C]//Journal of physics: Conference series. IOP Publishing, 2018, 1087(5): 052001.</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-3-Constructions"><a href="#3-3-Constructions" class="headerlink" title="3.3 Constructions"></a>3.3 Constructions</h1><p>In our scheme, we use inverted index structure as introduced above and implement searchable encryption with AND gate as access control. The scheme consists of 5 main algorithms. We introduce them in detail as below: </p>
+<h2 id="Init"><a href="#Init" class="headerlink" title="Init"></a>Init</h2><p>We suppose all the attributes are included in set $U&#x3D;\lbrace attr_1,attr_2,···,attr_n \rbrace$, where n is the size of $U$. For each attribute $attr_i(1 \le i \le n)$, there has 2 values $v_i$ and $\neg v_i$. If the attributes set $Attr$ of one data user include attribute $attr_i(1 \le i \le n)$, the value of $attr_i$ is $v_i$ and the value of $attr_i$ is $\neg v_i$ if $attr_i$ is not in $Attr$. To formalize the description of attributes, we adopt the value of attribute to represent whether user’s set contains this attribute. </p>
+<h3 id="分析："><a href="#分析：" class="headerlink" title="分析："></a>分析：</h3><p>该段用于初始化用户属性集合，将用户总体属性集合$U&#x3D;\lbrace attr_1, attr_2, ··· , attr_n \rbrace$中存在的属性置为$v_i$，而不存在的属性置为$\neg v_i$，举个例子就是用户$A$的属性集合为$U&#x3D;\lbrace v_1, \neg v_2, ··· , v_n \rbrace$。</p>
+<hr>
+<h2 id="Setup"><a href="#Setup" class="headerlink" title="Setup"></a>Setup</h2><p>Given a bilinear group $e : G \times G \to G_T$ , $p$ as prime order of $G$ and $G_T$ , and $H : {\lbrace 0, 1 \rbrace}^* \to Z_p$ as an one-way hash function, randomly select three numbers $a, b, c \gets Z_p$, a set $\lbrace r_1, r_2, · · · , r_{2n}\rbrace \gets Z_p$ and a set $\lbrace x_1, x_2, · · · , x_{2n} \rbrace \gets G$. Set $u_i &#x3D; g ^ {-r_i}$ and $y_i &#x3D; e(x_i, g)$, where $1 \le i \le 2n$. Then, output the public key $pk &#x3D; (g, g^a, g^b, g^c, (u_i, y_i)|1 \le i \le 2n)$ and the master key $msk &#x3D; (a, b, c, (r_i, x_i)|1 \le i \le 2n)$. </p>
+<h3 id="分析：-1"><a href="#分析：-1" class="headerlink" title="分析："></a>分析：</h3><p>这一步是初始化公钥$pk$和主密钥$msk$。双线性映射定义了两个素数p阶群乘法循环群$G$，$G_T$，循环群的意思是，群$G$中的每一个元素都是$G$中某一个固定元素q的乘方。$e : G \times G \to G_T$表示分别从循环群$G$中提取元素，并进行某种运算可以得到$G_T$中的元素，这里的e就是映射算法。$H : {\lbrace 0, 1 \rbrace}^* \to Z_p$，即一个散列函数，它将有限长度的二进制字符串作为输入，并输出素数p阶循环群的一个元素。从 $Z_p$ 群和 $G$ 群中随机挑选三个元素$a,b,c$和两个集合$\lbrace r_1, r_2, · · · , r_{2n}\rbrace, \lbrace x_1, x_2, · · · , x_{2n} \rbrace$，集合$u_i &#x3D; g ^ {-r_i}$，集合$y_i &#x3D; e(x_i, g)$，其中，$g$ 是$G$群中的随机元素，综上构成公钥$pk &#x3D; (g, g^a, g^b, g^c, (u_i, y_i)|1 \le i \le 2n)$ 和主密钥 $msk &#x3D; (a, b, c, (r_i, x_i)|1 \le i \le 2n)$。</p>
+<hr>
+<h2 id="Enc"><a href="#Enc" class="headerlink" title="Enc"></a>Enc</h2><div>
+Choose random $t_1, t_2 \in Z_p$. Suppose the access policy structure $S = \bigwedge_{v_i \in U} v'_i $, where $v'_i = v_i$ or $\neg v_i$. Set  $u_i' = u_i $  if $v_i' = v_i$, $u_i' = u_{i+n}$ otherwise. Compute $u_{gate} = g^{t_2} \prod_{i=1}^n{u'_i} $. For each keyword $w \in WD$, then set $W' = g^{ct_1} $, $W = g^{a(t_1+t_2)}g^{bH(w)t_1} $, and encrypt files $F$ which associate with the keyword $w$ with some symmetric encryption algorithm into $cphF$ . Obviously, $cphW = (W', W, u_{gate})$. Then, the whole $cph = (cphW, cphF)$ as the result of encryption. 
+</div>
+
+
+<h3 id="分析：-2"><a href="#分析：-2" class="headerlink" title="分析："></a>分析：</h3><div>
+这一步是加密索引。从$Z_p$群中选取两个随机数$t_1,t_2$。设置访问策略$S$，设置集合$u'_i$的值（如果$v'_i=v_i$，那么 $u'_i = u_i$，否则$u'_i = u_{i+n}$），根据$u_{gate} = g^{t_2} \prod_{i=1}^n{u'_i}$ 来计算$u_{gate}$，根据索引$w,t_1,t_2,g,a,b$ 来计算 $W' = g^{ct_1} $ 和 $W = g^{a(t_1+t_2)}g^{bH(w)t_1}$。与索引对应的文件通过对称密码进行加密，密文为$cphF$，所以整体密文为$cphW =  (cphW, cphF) = ((W', W, u_{gate}),cphF)$。
+</div>
+
+<hr>
+<h2 id="KeyGen"><a href="#KeyGen" class="headerlink" title="KeyGen"></a>KeyGen</h2><div>
+At First, we set $v = g^{ac}$. For each attribute $v_i^*$ in data user's attribute collection, set $y_i^* = y_i$ if $v_i^* = v_i$, $y_i^* = y_{i+n}$ otherwise. Similarly, compute $\sigma_i^* = x_i v^{r_i}$ if $v_i^* = v_i$, $\sigma_i^* = x_{i+n} v^{r_{i+n}}$ otherwise. Set $\sigma_{user} = \prod^n_{i=1} \sigma_i^*$ Then, the secret key $sk = (y_{user} = \prod^n_{i=1} y_i^*, < v, \sigma_{user} >)$. 
+</div>
+
+<h3 id="分析：-3"><a href="#分析：-3" class="headerlink" title="分析："></a>分析：</h3><div>
+这一步是关于文件搜索者生成自身私钥的步骤。自定义$v = g^{ac}$。对于文件搜索者自身拥有的属性，如果$v_i^* = v_i$，那么$y_i^* = y_i$，$\sigma_i^* = x_i v^{r_i}$，否则就 $y_i^* = y_{i+n}$，$\sigma_i^* = x_{i+n} v^{r_{i+n}}$。根据$\sigma_{user} = \prod^n_{i=1} \sigma_i^*$来计算$\sigma_{user}$，最后得出文件搜索者的私钥$sk = (y_{user} = \prod^n_{i=1} y_i^*, < v, \sigma_{user} >)$。
+</div>
+
+<hr>
+<h2 id="TokenGen"><a href="#TokenGen" class="headerlink" title="TokenGen"></a>TokenGen</h2><div>
+Select $s \gets Zp$. To generate the search token for keyword $w$, compute $tok1 = (g^ag^{bH(w)})^s$，$tok2 = g^{cs}$. Therefore, the search token $tok = (y^s_{user}, < v^s, \sigma^s_{user} >, tok1, tok2)$.
+</div>
+
+<h3 id="分析：-4"><a href="#分析：-4" class="headerlink" title="分析："></a>分析：</h3><div>
+这一步是为关键词创建 $token$ 。从 $Z_p$ 群中选取一个元素 $s$ ，计算 $tok1=(g^ag^{bH(w)})^s$ ,$tok2 = g^{cs}$，生成最终的$token$，即$tok = (y^s_{user}, < v^s, \sigma^s_{user} >, tok1, tok2)$。
+</div>
+
+<hr>
+<h2 id="Search"><a href="#Search" class="headerlink" title="Search"></a>Search</h2><div>
+At first, compute $E = \frac{e(u_{gate},v^s)e(\sigma^s_{user},g)}{y^s_{user}} $. If user's attributes satisfy the access policy according to the ciphertext, $E = e(g, g)^{acst2}$ and $e(W', tok1)E = e(W, tok2)$ holds. 
+</div>
+
+<h3 id="分析：-5"><a href="#分析：-5" class="headerlink" title="分析："></a>分析：</h3><div>
+执行搜索操作。先计算 $E = \frac{e(u_{gate},v^s)e(\sigma^s_{user},g)}{y^s_{user}} $，如果用户属性满足访问策略，则$E = e(g, g)^{acst_2}$ 和 $e(W', tok1)E = e(W, tok2)$成立。
+</div>
+
+<hr>
+<p>According to the above, the search token $tok$ can match with the $cphW$ in the ciphertext $cph$, if the attributes of data user can satisfy the access policy used for encrypting the keyword. The $cphF$ in cph should be downloaded afterwards and returned to the data user.</p>
+<hr>
+<p><strong>ps</strong>: Hexo中编写数学公式时，对符号 <strong>‘</strong> 的支持不好，会导致转化为html中的公式无法解析，进而导致页面混乱。</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/01/26/Learn-Content-Type-parameter/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-02-02 13:24:36
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86/" title="可搜索加密">
+                        <b>#</b> 可搜索加密
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/02/15/git-learn/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#3-3-Constructions"><span class="toc-text">3.3 Constructions</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Init"><span class="toc-text">Init</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90%EF%BC%9A"><span class="toc-text">分析：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Setup"><span class="toc-text">Setup</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90%EF%BC%9A-1"><span class="toc-text">分析：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Enc"><span class="toc-text">Enc</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90%EF%BC%9A-2"><span class="toc-text">分析：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KeyGen"><span class="toc-text">KeyGen</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90%EF%BC%9A-3"><span class="toc-text">分析：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TokenGen"><span class="toc-text">TokenGen</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90%EF%BC%9A-4"><span class="toc-text">分析：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Search"><span class="toc-text">Search</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90%EF%BC%9A-5"><span class="toc-text">分析：</span></a></li></ol></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="rss" href="/atom.xml">
+            <i class="iconfont icon-rss"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E8%AE%BA%E6%96%87%E5%AD%A6%E4%B9%A0(Efficient%20Attribute-Based%20Searchable%20Encryption%20on%20the%20Cloud%20Storage) + '&url=' + https%3A%2F%2Fmagi2b0y.github.io%2F2023%2F01%2F31%2FEfficient-Attribute-Based-Searchable-Encryption-on-the-Cloud-Storage%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://magi2b0y.github.io/2023/01/31/Efficient-Attribute-Based-Searchable-Encryption-on-the-Cloud-Storage/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

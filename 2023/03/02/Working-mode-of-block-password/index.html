@@ -11,7 +11,7 @@
   
   <title>
     
-      Hello World 
+      分组密码的工作模式 
       
       
       |
@@ -151,41 +151,122 @@
   <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
   <div class="container post-details" id="post-details">
     <div class="post-content">
-      <div class="post-title">Hello World</div>
+      <div class="post-title">分组密码的工作模式</div>
       <div class="post-attach">
         <span class="post-pubtime">
           <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
-          2023-09-17 23:05:03
+          2023-03-02 21:55:30
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" title="基础知识">
+                    <b>#</b> 基础知识
+                  </a>
+                </span>
+                
+              </span>
+          
       </div>
       <div class="markdown-body">
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+        <h1 id="1-电子密码本ECB-electronic-codebook-mode"><a href="#1-电子密码本ECB-electronic-codebook-mode" class="headerlink" title="1. 电子密码本ECB (electronic codebook mode)"></a>1. 电子密码本ECB (electronic codebook mode)</h1><p>在ECB模式中，将明文分组加密之后的结果将直接成为密文分组。</p>
+<p><img src="/./Working-mode-of-block-password/1.png"></p>
+<p>特点：</p>
+<ol>
+<li>简单和有效</li>
+<li>可以并行实现</li>
+<li>不能隐藏明文的模式信息：相同明文加密生成相同密文；同样信息多次出现造成泄漏</li>
+<li>对明文的主动攻击是可能的。信息块可被替换、重排、删除、重放</li>
+<li>误差传递：密文块损坏仅对应明文块损坏 适合于传输短信息</li>
+</ol>
+<p>一比特的明文密文错误只会影响该分组加解密，而不会影响到其他分组，但如果出现了密文中增加或丢失一些数据位，那么整个密文序列将不能正确解密。</p>
+<h1 id="2-密码分组链接CBC-cipher-block-chaining"><a href="#2-密码分组链接CBC-cipher-block-chaining" class="headerlink" title="2. 密码分组链接CBC (cipher block chaining)"></a>2. 密码分组链接CBC (cipher block chaining)</h1><p>CBC模式是将前一个密文分组与当前明文分组的内容混合起来进行加密的，这样就可以避免ECB模式的弱点。在CBC模式中，首先将明文分组与前一个密文分组进行XOR运算（异或），然后再进行加密。</p>
+<p><img src="/./Working-mode-of-block-password/2.png"></p>
+<p>特点：</p>
+<ol>
+<li>没有已知的并行实现算法</li>
+<li>能隐藏明文的模式信息：需要共同的初始向量IV；相同明文加密得到不同密文；初始向量IV可以用来改变第一块；定期更换IV（如果需要传递IV，要保证IV的完整性）</li>
+<li>对明文的主动攻击是不容易的：信息块不容易被替换、重排、删除、重放；误差传递：密文块损坏会导致明文块损坏</li>
+<li>安全性好于ECB</li>
+<li>适合于传输长度大于64位的报文</li>
+</ol>
+<p>明文中发生一比特错误，会影响对应的密文分组以及之后的所有密文分组，但由于解密会反转这种影响，所以没有明文错误扩散。<br>密文中发生一比特错误，会影响对应解密明文分组和其后的一个解密明文分组。随后的那个分组在解密后在同样的bit位上有错误，但再之后的分组将不会再受影响。</p>
+<h1 id="3-密码反馈CFB-cipher-feedback"><a href="#3-密码反馈CFB-cipher-feedback" class="headerlink" title="3. 密码反馈CFB (cipher feedback)"></a>3. 密码反馈CFB (cipher feedback)</h1><p>在CFB模式中，前一个密文分组会被送回到密码算法的输入端。所谓反馈（feedback），这里指的就是返回输入端的意思。</p>
+<p>CFB 模式中由密码算法所生成的二进制序列称为密钥流（key stream）。在CFB模式中，密码算法就相当于用来生成密钥流的伪随机数生成器，而初始化向量就相当于伪随机数生成器的“种子”。在CFB模式中，明文数据可以被逐比特加密，因此我们可以将CFB模式看做是一种使用分组密码来实现流密码的方式。</p>
+<h2 id="3-1-CFB-模式加密"><a href="#3-1-CFB-模式加密" class="headerlink" title="3.1. CFB 模式加密"></a>3.1. CFB 模式加密</h2><p><img src="/./Working-mode-of-block-password/3-1.png"></p>
+<h2 id="3-2-CFB-模式解密"><a href="#3-2-CFB-模式解密" class="headerlink" title="3.2. CFB 模式解密"></a>3.2. CFB 模式解密</h2><p><img src="/./Working-mode-of-block-password/3-2.png"></p>
+<p>特点：</p>
+<ol>
+<li>分组密码自同步流密码</li>
+<li>没有已知的并行实现算法</li>
+<li>关于IV：为进行正常的加密和解密，发送与接收需要共同IV；IV应具有唯一性（即在密钥不变时，每次加密使用不同的IV）</li>
+<li>优点：隐藏了明文模式</li>
+<li>缺点：误差传递，一个单元损坏影响多个单元</li>
+</ol>
+<p>明文错误同CBC<br>密文错误一位会引起解密后对应明文的一位错误，错误进入移位寄存器，将导致加密步骤输出错误，直到该错误从寄存器移除，有良好的自同步性质</p>
+<h1 id="4-输出反馈OFB-output-feedback"><a href="#4-输出反馈OFB-output-feedback" class="headerlink" title="4. 输出反馈OFB (output feedback)"></a>4. 输出反馈OFB (output feedback)</h1><p>在OFB模式中，密码算法的输入会反馈到密码算法的输入中。OFB模式并不是通过密码算法对明文直接进行加密的，而是通过将“明文分组”和“密码算法的输出”进行XOR来产生“密文分组”的，在这一点上OFB模式和CFB模式非常相似。<br>由于CFB模式中是对密文分组进行反馈的，因此必须从第一个明文分组开始按顺序进行加密，也就是说无法跳过明文分组1而先对明文分组2进行加密。相对地，在OFB模式中，XOR所需要的比特序列（密钥流）可以事先通过密码算法生成，和明文分组无关。只要提前准备好所需的密钥流，则在实际从明文生成密文的过程中，就完全不需要动用密码算法了，只要将明文与密钥流进行XOR就可以了。这就意味着只要提前准备好密钥流就可以快速完成加密。换个角度来看，生成密钥流的操作和进行XOR运算的操作是可以并行的。</p>
+<h2 id="4-1-OFB-模式加密"><a href="#4-1-OFB-模式加密" class="headerlink" title="4.1. OFB 模式加密"></a>4.1. OFB 模式加密</h2><p><img src="/./Working-mode-of-block-password/4-1.png"></p>
+<h2 id="3-2-OFB-模式解密"><a href="#3-2-OFB-模式解密" class="headerlink" title="3.2. OFB 模式解密"></a>3.2. OFB 模式解密</h2><p><img src="/./Working-mode-of-block-password/4-2.png"></p>
+<p>特点：</p>
+<ol>
+<li>没有已知的并行实现算法</li>
+<li>优点：隐藏了明文模式；没有误差传递：一个单元损坏只影响对应单元</li>
+<li>缺点：不具有自同步能力，要求系统要保持严格的同步；重新同步时需要新的IV，IV可以用明文形式传送</li>
+<li>对明文的主动攻击是可能的，信息块可被替换、重排、删除、重放</li>
+<li>安全性较CFB差</li>
+</ol>
+<p>明文在某位上发生的错误不会影响加密后密文其他位。<br>密文在某位上发生的错误不会影响解密后明文其他位。</p>
+<h1 id="5-计数器模式CTR-counter"><a href="#5-计数器模式CTR-counter" class="headerlink" title="5. 计数器模式CTR (counter)"></a>5. 计数器模式CTR (counter)</h1><p>CTR 模式是一种通过将逐次累加的计数器进行加密来生成密钥流的流密码。CTR 模式中，每个分组对应一个逐次累加的计数器，并通过对计数器进行加密来生成密钥流。也就是说，最终的密文分组是通过将计数器加密得到的比特序列，与明文分组进行XOR而得到的。<br>CTR模式和OFB模式一样，都属于流密码。OFB模式是将加密的输出反馈到输入，而CTR模式则是将计数器的值用作输入。</p>
+<p><img src="/./Working-mode-of-block-password/5.png"></p>
+<p>特点：</p>
+<ol>
+<li>硬件效率：允许同时处理多块明&#x2F;密文</li>
+<li>软件效率：允许并行计算</li>
+<li>预处理</li>
+<li>随机访问</li>
+<li>可证明安全性：能够证明CTR至少和其他模式一样安全</li>
+<li>简单性：只需要实现加密算法</li>
+<li>无填充：可以高效地作为密钥流使用</li>
+</ol>
+<p>CTR模式也具备和OFB模式类似的性质。如果CTR模式的密文分组有一个比特反转了，则解密后的明文分组中仅有与之对应的比特会被反转，这一错误不会放大。明文加密与之类似。</p>
+<h1 id="6-工作模式选用原则"><a href="#6-工作模式选用原则" class="headerlink" title="6. 工作模式选用原则"></a>6. 工作模式选用原则</h1><ul>
+<li>ECB模式，简单、高速，但最弱，易受重发攻击，一般不推荐；</li>
+<li>CBC,CFB,OFB,CTR的选择取决于实用特殊考虑；</li>
+<li>CBC适用于文件加密，但较ECB慢，且需要另加移存器和组的异或运算，但安全性加强。软件加密最好选用此种方式；</li>
+<li>OFB和CFB较CBC慢许多，每次迭代只有少数bit完成加密。若可以容忍少量错误扩展，可选CFB。否则，可选OFB或CTR;</li>
+<li>在字符为单元的流密码种多选CFB模式，如终端和主机间通信。而OFB或CTR用于高速同步系统，不容忍差错传播。</li>
+</ul>
 
       </div>
       
         <div class="prev-or-next">
           <div class="post-foot-next">
             
+              <a href="/2023/02/27/learn-file-include-vulnerability/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
           </div>
           <div class="post-attach">
             <span class="post-pubtime">
               <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
-              2023-09-17 23:05:03
+              2023-03-02 21:55:30
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" title="基础知识">
+                        <b>#</b> 基础知识
+                      </a>
+                    </span>
+                    
+                  </span>
+              
           </div>
           <div class="post-foot-prev">
             
@@ -201,7 +282,7 @@
     <div class="title">目录</div>
     <div class="catalog-content">
       
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Quick-Start"><span class="toc-text">Quick Start</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Create-a-new-post"><span class="toc-text">Create a new post</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Run-server"><span class="toc-text">Run server</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Generate-static-files"><span class="toc-text">Generate static files</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Deploy-to-remote-sites"><span class="toc-text">Deploy to remote sites</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E7%94%B5%E5%AD%90%E5%AF%86%E7%A0%81%E6%9C%ACECB-electronic-codebook-mode"><span class="toc-text">1. 电子密码本ECB (electronic codebook mode)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%AF%86%E7%A0%81%E5%88%86%E7%BB%84%E9%93%BE%E6%8E%A5CBC-cipher-block-chaining"><span class="toc-text">2. 密码分组链接CBC (cipher block chaining)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E5%AF%86%E7%A0%81%E5%8F%8D%E9%A6%88CFB-cipher-feedback"><span class="toc-text">3. 密码反馈CFB (cipher feedback)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-CFB-%E6%A8%A1%E5%BC%8F%E5%8A%A0%E5%AF%86"><span class="toc-text">3.1. CFB 模式加密</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-CFB-%E6%A8%A1%E5%BC%8F%E8%A7%A3%E5%AF%86"><span class="toc-text">3.2. CFB 模式解密</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E8%BE%93%E5%87%BA%E5%8F%8D%E9%A6%88OFB-output-feedback"><span class="toc-text">4. 输出反馈OFB (output feedback)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-OFB-%E6%A8%A1%E5%BC%8F%E5%8A%A0%E5%AF%86"><span class="toc-text">4.1. OFB 模式加密</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-OFB-%E6%A8%A1%E5%BC%8F%E8%A7%A3%E5%AF%86"><span class="toc-text">3.2. OFB 模式解密</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E8%AE%A1%E6%95%B0%E5%99%A8%E6%A8%A1%E5%BC%8FCTR-counter"><span class="toc-text">5. 计数器模式CTR (counter)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F%E9%80%89%E7%94%A8%E5%8E%9F%E5%88%99"><span class="toc-text">6. 工作模式选用原则</span></a></li></ol>
       
     </div>
   </div>
@@ -476,12 +557,12 @@
       </a>
       <div class="share-content hidden">
         
-          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Hello%20World + '&url=' + https%3A%2F%2Fmagi2b0y.github.io%2F2023%2F09%2F17%2Fhello-world%2F + '" target="_blank" title="Twitter">
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E5%88%86%E7%BB%84%E5%AF%86%E7%A0%81%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F + '&url=' + https%3A%2F%2Fmagi2b0y.github.io%2F2023%2F03%2F02%2FWorking-mode-of-block-password%2F + '" target="_blank" title="Twitter">
             <i class="iconfont icon-twitter"></i>
           </a>
         
         
-          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://magi2b0y.github.io/2023/09/17/hello-world/" target="_blank" title="Facebook">
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://magi2b0y.github.io/2023/03/02/Working-mode-of-block-password/" target="_blank" title="Facebook">
             <i class="iconfont icon-facebooksquare"></i>
           </a>
         

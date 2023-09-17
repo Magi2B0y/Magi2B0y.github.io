@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <meta name="author" content="Magi2B0y" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      机器学习--KNN算法 
+      
+      
+      |
+    
+     Hexo
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img no-lazy src="/images/cat-avatar.jpg" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">MagicBoy</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">机器学习--KNN算法</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+          2023-02-22 15:45:06
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/Python/" title="Python">
+                    <b>#</b> Python
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <style>
+.center 
+{
+  width: auto;
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h2><p>KNN算法可以说是最简单的分类算法之一，同时，它也是最常用的分类算法之一，该算法是给定一个训练数据集，对新的输入实例，在训练数据集中找到与该实例最邻近的K个实例，这K个实例的多数属于某个类，就把该输入实例分类到这个类中，类似于现实生活中少数服从多数的思想。</p>
+<p>下面通过一个简单的例子说明一下：如下图，绿色圆要被决定赋予哪个类，是红色三角形还是蓝色四方形？如果K&#x3D;3，由于红色三角形所占比例为2&#x2F;3，绿色圆将被赋予红色三角形那个类，如果K&#x3D;5，由于蓝色四方形比例为3&#x2F;5，因此绿色圆被赋予蓝色四方形类。</p>
+<div class="center">
+<img src="./Machine_Learning--KNN_algorithm/1-1.png">
+</div>
+
+<h2 id="2-算法流程"><a href="#2-算法流程" class="headerlink" title="2. 算法流程"></a>2. 算法流程</h2><p>在训练集中数据和标签已知的情况下，输入测试数据，将测试数据的特征与训练集中对应的特征进行相互比较，找到训练集中与之最为相似的前K个数据，则该测试数据对应的类别就是K个数据中出现次数最多的那个分类，其算法的描述为：</p>
+<ul>
+<li>计算已知类别数据集中的点与当前点之间的距离</li>
+<li>按距离递增次序排序</li>
+<li>选取与当前点距离最小的k个点</li>
+<li>统计前k个点所在的类别出现的频率</li>
+<li>返回前k个点出现频率最高的类别作为当前点的预测分类</li>
+</ul>
+<p><strong>KNN取距离度量的方式:</strong></p>
+<p><strong>距离计算：</strong></p>
+<p>要度量空间中点距离的话，有好几种度量方式，比如常见的曼哈顿距离计算，欧式距离计算等等。不过通常KNN算法中使用的是欧式距离，这里只是简单说一下，拿二维平面为例，，二维空间两个点的欧式距离计算公式如下：</p>
+<div class="center">
+<img src="./Machine_Learning--KNN_algorithm/2-1.png">
+</div>
+
+<p>拓展到多维空间，则公式变成这样：</p>
+<div class="center">
+<img src="./Machine_Learning--KNN_algorithm/2-2.png">
+</div>
+
+<p>KNN算法最简单粗暴的就是将预测点与所有点距离进行计算，然后保存并排序，选出前面K个值看看哪些类别比较多。</p>
+<p><strong>K值选择：</strong></p>
+<p>在实际应用中，K值一般取一个比较小的数值，例如采用交叉验证法（简单来说，就是一部分样本做训练集，一部分做测试集）来选择最优的K值。</p>
+<ul>
+<li><p>如果选择较小的K值，就相当于用较小的领域中的训练实例进行预测，“学习”近似误差会减小，只有与输入实例较近或相似的训练实例才会对预测结果起作用，与此同时带来的问题是“学习”的估计误差会增大，换句话说，K值的减小就意味着整体模型变得复杂，容易发生过拟合；</p>
+</li>
+<li><p>如果选择较大的K值，就相当于用较大领域中的训练实例进行预测，其优点是可以减少学习的估计误差，但缺点是学习的近似误差会增大。这时候，与输入实例较远（不相似的）训练实例也会对预测器作用，使预测发生错误，且K值的增大就意味着整体的模型变得简单。</p>
+</li>
+<li><p>K&#x3D;N，则完全不足取，因为此时无论输入实例是什么，都只是简单的预测它属于在训练实例中最多的类，模型过于简单，忽略了训练实例中大量有用信息。</p>
+</li>
+</ul>
+<h2 id="3-KNN算法的特点与优缺点"><a href="#3-KNN算法的特点与优缺点" class="headerlink" title="3. KNN算法的特点与优缺点"></a>3. KNN算法的特点与优缺点</h2><h3 id="3-1-特点"><a href="#3-1-特点" class="headerlink" title="3.1 特点"></a>3.1 特点</h3><p>KNN是一种非参的，惰性的算法模型。</p>
+<ul>
+<li><p><strong>非参：</strong> 模型不会对数据做出任何的假设，与之相对的是线性回归（我们总会假设线性回归是一条直线）。也就是说KNN建立的模型结构是根据数据来决定的。</p>
+</li>
+<li><p><strong>惰性：</strong> 同样是分类算法，逻辑回归需要先对数据进行大量训练，最后才会得到一个算法模型。而KNN算法却不需要，它没有明确的训练数据的过程，或者说这个过程很快。</p>
+</li>
+</ul>
+<h3 id="3-2-KNN算法的优势和劣势"><a href="#3-2-KNN算法的优势和劣势" class="headerlink" title="3.2 KNN算法的优势和劣势"></a>3.2 KNN算法的优势和劣势</h3><p><strong>优点：</strong></p>
+<ul>
+<li>KNN算法简洁明了，模型训练时间快</li>
+<li>预测效果好，对异常值不敏感</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>对内存要求较高，因为该算法存储了所有训练数据</li>
+<li>预测阶段可能很慢</li>
+<li>对不相关的功能和数据规模敏感</li>
+</ul>
+<h2 id="4-KNN算法的应用"><a href="#4-KNN算法的应用" class="headerlink" title="4. KNN算法的应用"></a>4. KNN算法的应用</h2><p><strong>开发样例：</strong> <a target="_blank" rel="noopener" href="https://github.com/Magi2B0y/KNN-algorithm-application">https://github.com/Magi2B0y/KNN-algorithm-application</a></p>
+<p>在实现为用户推荐相似好友、生成每首歌的相似音乐和为用户提供推荐音乐三个功能上应用到了KNN算法</p>
+<p><strong>数据源：</strong> 数据库中所有用户的听歌记录</p>
+<p><strong>数据结果：</strong> 为所有用户生成相似好友，为每首歌生成相似歌曲，最后根据每首歌的相似歌曲和用户听歌记录来为用户提供推荐音乐</p>
+<p>项目文件功能如下表：</p>
+<div class="center">
+
+<table>
+<thead>
+<tr>
+<th>文件名</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>main_function.py</td>
+<td>顺序执行以下py文件</td>
+</tr>
+<tr>
+<td>update_data_source.py</td>
+<td>读取数据库中需要的数据，作为模型训练的数据集，存储在dataset下</td>
+</tr>
+<tr>
+<td>other_user_recommend.py</td>
+<td>训练得到所有用户的相似用户</td>
+</tr>
+<tr>
+<td>user_listened_recommend.py</td>
+<td>将训练得到的相似音乐和用户听歌记录相结合，得到所有用户的音乐推荐</td>
+</tr>
+<tr>
+<td>insert_DB.py</td>
+<td>将结果集重新存入数据库</td>
+</tr>
+</tbody></table>
+</div>
+
+
+<p>python文件的调用流程如下：</p>
+<div class="center">
+<img src="./Machine_Learning--KNN_algorithm/4-1.png">
+</div>
+
+<br>
+关键的模型训练部分代码如下：
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_trainset_algo</span>():</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    KNN算法使用训练集进行训练</span></span><br><span class="line"><span class="string">    :return:训练结果</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    reader = Reader(line_format=<span class="string">&#x27;user item rating timestamp&#x27;</span>, sep=<span class="string">&#x27;\t&#x27;</span>,  rating_scale=(<span class="number">0</span>, <span class="number">100</span>),skip_lines=<span class="number">0</span>)</span><br><span class="line">    <span class="comment"># 用户听歌记录文件路径</span></span><br><span class="line">    file_path = <span class="string">&quot;./dataset/user_record.txt&quot;</span></span><br><span class="line">    <span class="comment"># 加载数据集</span></span><br><span class="line">    data = Dataset.load_from_file(file_path, reader=reader)</span><br><span class="line">    <span class="comment"># 将数据集转换成矩阵形式</span></span><br><span class="line">    trainset = data.build_full_trainset()</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(trainset.all_items())</span><br><span class="line">    <span class="built_in">print</span>(trainset.all_users())</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 基于物品的协同过滤算法，相似度衡量方法：皮尔逊相似度</span></span><br><span class="line">    <span class="comment"># 这是一个用户数量N，矩阵大小为 N*N 的稀疏矩阵，然后get_neighbors得到的是topK个相似用户。如果想要得到相似歌曲，则需要使用基于项目的协同过滤算法，</span></span><br><span class="line">    <span class="comment"># 或者从得到的相似用户中，提取他们的播放记录（这是基于用户的协同过滤算法）</span></span><br><span class="line">    sim_options = &#123;<span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;pearson_baseline&#x27;</span>, <span class="string">&#x27;user_based&#x27;</span>: <span class="literal">True</span>&#125;</span><br><span class="line">    <span class="comment"># 选择KNN算法</span></span><br><span class="line">    algo = KNNBaseline(sim_options=sim_options)</span><br><span class="line">    <span class="comment"># algo = KNNBasic(sim_options=sim_options)</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 训练数据集</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;开始训练······&#x27;</span>)</span><br><span class="line">    algo.fit(trainset)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;训练结束!!!!&#x27;</span>)</span><br><span class="line">    <span class="keyword">return</span> algo</span><br></pre></td></tr></table></figure>
+
+<p><strong>输出结果集：</strong></p>
+<p>每首音乐的10首相似音乐：</p>
+<div class="center">
+<img src="./Machine_Learning--KNN_algorithm/4-4.png">
+</div>
+
+<p>为每位用户推荐的20首音乐：</p>
+<div class="center">
+<img src="./Machine_Learning--KNN_algorithm/4-2.png">
+</div>
+
+<p>为每位用户推荐的10位相似好友：</p>
+<div class="center">
+<img src="./Machine_Learning--KNN_algorithm/4-3.png">
+</div>
+
+
+<hr>
+<p>在文章最后，介绍一下github开源项目不同 license 的具体含义</p>
+<div class="center">
+
+<table>
+<thead>
+<tr>
+<th>license</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Apache</td>
+<td>使用这个协议可以进行商用，可以对其修改、分发，但是要声明作者来源和你的修改以及协议。很多大型项目都使用这个协议，比如 tensorflow、puppeteer。</td>
+</tr>
+<tr>
+<td>MIT</td>
+<td>这是个人用得比较多的协议，因为比较宽松精简，只要声明版权和协议就可以了，可以商用、修改、复制、重新发布等操作。使用这个协议的就有vue、react等</td>
+</tr>
+<tr>
+<td>BSD</td>
+<td>这个和 MIT 协议类似，但未经事先明确书面许可，不得使用版权所有者的姓名或其贡献者的姓名来认可或推广从本软件衍生的产品，其它基本操作都可以使用。flask 用的就是这个协议。</td>
+</tr>
+<tr>
+<td>GNU</td>
+<td>可以私用也可以商用，但是必须声明来源，并且需要声明原有的协议，以及你的代码也必须开源出来。我们很熟悉的 Linux 就是采用这种协议。</td>
+</tr>
+<tr>
+<td>NO</td>
+<td>就是什么都不声明，但是并不意味着就可以乱来，这比声明了协议还严格。你可以使用、商用，但是你需要声明协议和来源，而且，你不能对代码进行修改、复制、再次发布。</td>
+</tr>
+<tr>
+<td>Eclipse</td>
+<td>这个协议允许你商用、复制、修改、再次发布等，需要声明来源和协议。像 java 中的 junit4 就是使用这个协议。</td>
+</tr>
+</tbody></table>
+</div>
+
+
+<p>以下以一张图来简单概述协议之间的区别：</p>
+<div class="center">
+<img src="./Machine_Learning--KNN_algorithm/4-5.png">
+</div>
+
+<p>更加详细的说明请查看 <a target="_blank" rel="noopener" href="https://opensource.org/licenses/alphabetical">https://opensource.org/licenses/alphabetical</a></p>
+<hr>
+<p>ENDฅฅ</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/04/08/hello-world/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
+              2023-02-22 15:45:06
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/Python/" title="Python">
+                        <b>#</b> Python
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/07/08/Software-supply-chain-security/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="toc-text">1. 概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B"><span class="toc-text">2. 算法流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-KNN%E7%AE%97%E6%B3%95%E7%9A%84%E7%89%B9%E7%82%B9%E4%B8%8E%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-text">3. KNN算法的特点与优缺点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E7%89%B9%E7%82%B9"><span class="toc-text">3.1 特点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-KNN%E7%AE%97%E6%B3%95%E7%9A%84%E4%BC%98%E5%8A%BF%E5%92%8C%E5%8A%A3%E5%8A%BF"><span class="toc-text">3.2 KNN算法的优势和劣势</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-KNN%E7%AE%97%E6%B3%95%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-text">4. KNN算法的应用</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="rss" href="/atom.xml">
+            <i class="iconfont icon-rss"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0--KNN%E7%AE%97%E6%B3%95 + '&url=' + https%3A%2F%2Fmagi2b0y.github.io%2F2022%2F06%2F30%2FMachine_Learning--KNN_algorithm%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://magi2b0y.github.io/2022/06/30/Machine_Learning--KNN_algorithm/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>
