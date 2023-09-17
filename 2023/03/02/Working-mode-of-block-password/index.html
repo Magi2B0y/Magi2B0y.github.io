@@ -172,7 +172,7 @@
       </div>
       <div class="markdown-body">
         <h1 id="1-电子密码本ECB-electronic-codebook-mode"><a href="#1-电子密码本ECB-electronic-codebook-mode" class="headerlink" title="1. 电子密码本ECB (electronic codebook mode)"></a>1. 电子密码本ECB (electronic codebook mode)</h1><p>在ECB模式中，将明文分组加密之后的结果将直接成为密文分组。</p>
-<p><img src="/./Working-mode-of-block-password/1.png"></p>
+<p><img src="/2023/03/02/Working-mode-of-block-password/1.png"></p>
 <p>特点：</p>
 <ol>
 <li>简单和有效</li>
@@ -183,7 +183,7 @@
 </ol>
 <p>一比特的明文密文错误只会影响该分组加解密，而不会影响到其他分组，但如果出现了密文中增加或丢失一些数据位，那么整个密文序列将不能正确解密。</p>
 <h1 id="2-密码分组链接CBC-cipher-block-chaining"><a href="#2-密码分组链接CBC-cipher-block-chaining" class="headerlink" title="2. 密码分组链接CBC (cipher block chaining)"></a>2. 密码分组链接CBC (cipher block chaining)</h1><p>CBC模式是将前一个密文分组与当前明文分组的内容混合起来进行加密的，这样就可以避免ECB模式的弱点。在CBC模式中，首先将明文分组与前一个密文分组进行XOR运算（异或），然后再进行加密。</p>
-<p><img src="/./Working-mode-of-block-password/2.png"></p>
+<p><img src="/2023/03/02/Working-mode-of-block-password/2.png"></p>
 <p>特点：</p>
 <ol>
 <li>没有已知的并行实现算法</li>
@@ -195,8 +195,8 @@
 <p>明文中发生一比特错误，会影响对应的密文分组以及之后的所有密文分组，但由于解密会反转这种影响，所以没有明文错误扩散。<br>密文中发生一比特错误，会影响对应解密明文分组和其后的一个解密明文分组。随后的那个分组在解密后在同样的bit位上有错误，但再之后的分组将不会再受影响。</p>
 <h1 id="3-密码反馈CFB-cipher-feedback"><a href="#3-密码反馈CFB-cipher-feedback" class="headerlink" title="3. 密码反馈CFB (cipher feedback)"></a>3. 密码反馈CFB (cipher feedback)</h1><p>在CFB模式中，前一个密文分组会被送回到密码算法的输入端。所谓反馈（feedback），这里指的就是返回输入端的意思。</p>
 <p>CFB 模式中由密码算法所生成的二进制序列称为密钥流（key stream）。在CFB模式中，密码算法就相当于用来生成密钥流的伪随机数生成器，而初始化向量就相当于伪随机数生成器的“种子”。在CFB模式中，明文数据可以被逐比特加密，因此我们可以将CFB模式看做是一种使用分组密码来实现流密码的方式。</p>
-<h2 id="3-1-CFB-模式加密"><a href="#3-1-CFB-模式加密" class="headerlink" title="3.1. CFB 模式加密"></a>3.1. CFB 模式加密</h2><p><img src="/./Working-mode-of-block-password/3-1.png"></p>
-<h2 id="3-2-CFB-模式解密"><a href="#3-2-CFB-模式解密" class="headerlink" title="3.2. CFB 模式解密"></a>3.2. CFB 模式解密</h2><p><img src="/./Working-mode-of-block-password/3-2.png"></p>
+<h2 id="3-1-CFB-模式加密"><a href="#3-1-CFB-模式加密" class="headerlink" title="3.1. CFB 模式加密"></a>3.1. CFB 模式加密</h2><p><img src="/2023/03/02/Working-mode-of-block-password/3-1.png"></p>
+<h2 id="3-2-CFB-模式解密"><a href="#3-2-CFB-模式解密" class="headerlink" title="3.2. CFB 模式解密"></a>3.2. CFB 模式解密</h2><p><img src="/2023/03/02/Working-mode-of-block-password/3-2.png"></p>
 <p>特点：</p>
 <ol>
 <li>分组密码自同步流密码</li>
@@ -207,8 +207,8 @@
 </ol>
 <p>明文错误同CBC<br>密文错误一位会引起解密后对应明文的一位错误，错误进入移位寄存器，将导致加密步骤输出错误，直到该错误从寄存器移除，有良好的自同步性质</p>
 <h1 id="4-输出反馈OFB-output-feedback"><a href="#4-输出反馈OFB-output-feedback" class="headerlink" title="4. 输出反馈OFB (output feedback)"></a>4. 输出反馈OFB (output feedback)</h1><p>在OFB模式中，密码算法的输入会反馈到密码算法的输入中。OFB模式并不是通过密码算法对明文直接进行加密的，而是通过将“明文分组”和“密码算法的输出”进行XOR来产生“密文分组”的，在这一点上OFB模式和CFB模式非常相似。<br>由于CFB模式中是对密文分组进行反馈的，因此必须从第一个明文分组开始按顺序进行加密，也就是说无法跳过明文分组1而先对明文分组2进行加密。相对地，在OFB模式中，XOR所需要的比特序列（密钥流）可以事先通过密码算法生成，和明文分组无关。只要提前准备好所需的密钥流，则在实际从明文生成密文的过程中，就完全不需要动用密码算法了，只要将明文与密钥流进行XOR就可以了。这就意味着只要提前准备好密钥流就可以快速完成加密。换个角度来看，生成密钥流的操作和进行XOR运算的操作是可以并行的。</p>
-<h2 id="4-1-OFB-模式加密"><a href="#4-1-OFB-模式加密" class="headerlink" title="4.1. OFB 模式加密"></a>4.1. OFB 模式加密</h2><p><img src="/./Working-mode-of-block-password/4-1.png"></p>
-<h2 id="3-2-OFB-模式解密"><a href="#3-2-OFB-模式解密" class="headerlink" title="3.2. OFB 模式解密"></a>3.2. OFB 模式解密</h2><p><img src="/./Working-mode-of-block-password/4-2.png"></p>
+<h2 id="4-1-OFB-模式加密"><a href="#4-1-OFB-模式加密" class="headerlink" title="4.1. OFB 模式加密"></a>4.1. OFB 模式加密</h2><p><img src="/2023/03/02/Working-mode-of-block-password/4-1.png"></p>
+<h2 id="3-2-OFB-模式解密"><a href="#3-2-OFB-模式解密" class="headerlink" title="3.2. OFB 模式解密"></a>3.2. OFB 模式解密</h2><p><img src="/2023/03/02/Working-mode-of-block-password/4-2.png"></p>
 <p>特点：</p>
 <ol>
 <li>没有已知的并行实现算法</li>
@@ -219,7 +219,7 @@
 </ol>
 <p>明文在某位上发生的错误不会影响加密后密文其他位。<br>密文在某位上发生的错误不会影响解密后明文其他位。</p>
 <h1 id="5-计数器模式CTR-counter"><a href="#5-计数器模式CTR-counter" class="headerlink" title="5. 计数器模式CTR (counter)"></a>5. 计数器模式CTR (counter)</h1><p>CTR 模式是一种通过将逐次累加的计数器进行加密来生成密钥流的流密码。CTR 模式中，每个分组对应一个逐次累加的计数器，并通过对计数器进行加密来生成密钥流。也就是说，最终的密文分组是通过将计数器加密得到的比特序列，与明文分组进行XOR而得到的。<br>CTR模式和OFB模式一样，都属于流密码。OFB模式是将加密的输出反馈到输入，而CTR模式则是将计数器的值用作输入。</p>
-<p><img src="/./Working-mode-of-block-password/5.png"></p>
+<p><img src="/2023/03/02/Working-mode-of-block-password/5.png"></p>
 <p>特点：</p>
 <ol>
 <li>硬件效率：允许同时处理多块明&#x2F;密文</li>
@@ -269,11 +269,6 @@
               
           </div>
           <div class="post-foot-prev">
-            
-              <a href="/2023/09/17/test/" target="_self">
-                <span>下一页</span>
-                <i class="iconfont icon-chevronright"></i>
-              </a>
             
           </div>
         </div>

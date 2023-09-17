@@ -155,7 +155,7 @@
       <div class="post-attach">
         <span class="post-pubtime">
           <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
-          2022-11-25 10:59:32
+          2023-09-18 00:00:41
         </span>
         
               <span class="post-categories">
@@ -188,10 +188,7 @@
 <p>d)解密算法decrypt。该算法的输入是params、密文C和私钥d，输出是消息M。该算法由解密者执行。</p>
 <h2 id="1-2-基于角色的访问控制-Role-Based-Access-Control，RBA"><a href="#1-2-基于角色的访问控制-Role-Based-Access-Control，RBA" class="headerlink" title="1.2 基于角色的访问控制(Role-Based Access Control，RBA)"></a>1.2 基于角色的访问控制(Role-Based Access Control，RBA)</h2><h3 id="1-2-1-概念"><a href="#1-2-1-概念" class="headerlink" title="1.2.1 概念"></a>1.2.1 概念</h3><p>基于角色的访问控制，就是用户通过角色与权限进行关联。简单地说，一个用户拥有若干角色，每一个角色拥有若干权限。这样，就构造成“用户-角色-权限”的授权模型。在这种模型中，用户与角色之间，角色与权限（功能）之间，一般都是多对多的关系。</p>
 <h2 id="1-3-基于属性的加密-Attribute-based-encryption，ABE"><a href="#1-3-基于属性的加密-Attribute-based-encryption，ABE" class="headerlink" title="1.3 基于属性的加密(Attribute-based encryption，ABE)"></a>1.3 基于属性的加密(Attribute-based encryption，ABE)</h2><h3 id="1-3-1-概念"><a href="#1-3-1-概念" class="headerlink" title="1.3.1 概念"></a>1.3.1 概念</h3><p>2006年，Goyal V, Pandey A, Sahai A, Waters B在the 13th ACM Conf. on Computer and Communications Security会议上提出了基于属性加密的概念， Sahai A, Waters B提出了第一个基于属性加密方案。其概念如下图所示：</p>
-<div class="center">
-<img src="/2022/08/13/Attribute-based_searchable_encryption/1-3-1.png">
-</div>
-
+<p><img src="/2022/08/13/Attribute-based_searchable_encryption/1-3-1.png"></p>
 <p>数据拥有者需要制定一条仅有这n个用户才能满足的访问策略，接着输入公共参数PP、该条策略以及明文文件至ABE加密算法，进行加密一次，形成唯一一份密文。得到密文后，数据拥有者将该份密文分别发送给n个不同的用户。</p>
 <h3 id="1-3-2-KP-ABE方案"><a href="#1-3-2-KP-ABE方案" class="headerlink" title="1.3.2 KP-ABE方案"></a>1.3.2 KP-ABE方案</h3><p> KP-ABE（Key Policy Attribute-based Encryption，基于密钥策略的属性加密）方案是将策略嵌入到密钥中，属性嵌入到密文中，密钥对应于一个访问结构而密文对应于一个属性集合，解密当且仅当属性集合中的属性能够满足此访问策略。这种设计比较接近静态场景，此时密文用与其相关的属性加密存放在服务器上，当允许用户得到某些消息时，就分配一个特定的访问策略给用户，其应用场景则更加偏向于付费视频网站、日志加密管理等等。如果用户想解密多个文件，那么他必须拥有多个可以满足匹配的秘钥，否则不能解密多个文件。其包含一下四个算法：</p>
 <ul>
@@ -346,7 +343,7 @@
           <div class="post-attach">
             <span class="post-pubtime">
               <i class="iconfont icon-updatetime mr-10" title="更新时间"></i>
-              2022-11-25 10:59:32
+              2023-09-18 00:00:41
             </span>
             
                   <span class="post-categories">

