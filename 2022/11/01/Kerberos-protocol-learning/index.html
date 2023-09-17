@@ -250,7 +250,7 @@
 </tbody></table>
 <h2 id="3-2-工作过程分析"><a href="#3-2-工作过程分析" class="headerlink" title="3.2. 工作过程分析"></a>3.2. 工作过程分析</h2><p>Client从KDC获取TGT，Client利用获取的TGT向KDC请求其他Service的Ticket（通过获取的session进行访问）。</p>
 <div class="center">
-<img src="/.io//3-2-1.png">
+<img src="/2022/11/01/Kerberos-protocol-learning/3-2-1.png">
 </div>
 
 <p><strong>步骤详解：</strong></p>
@@ -284,14 +284,14 @@
 <h1 id="4-存在漏洞"><a href="#4-存在漏洞" class="headerlink" title="4. 存在漏洞"></a>4. 存在漏洞</h1><h2 id="4-1-Kerberoasting"><a href="#4-1-Kerberoasting" class="headerlink" title="4.1. Kerberoasting"></a>4.1. Kerberoasting</h2><p>当发送TGS时，KDC会使用时间戳+服务账户的密码哈希来加密TGS。由于目标服务通常为计算机控制的某个服务（比如HOST或者CIFS），因此这里会使用主机账户密码哈希。在某些情况下，用户账户也会被创建为“服务账户”，注册为SPN。由于KDC不负责服务的授权工作（该工作由服务自己负责），因此任何用户都可以请求任何服务的TGS。这意味着如果某个用户“服务账户”被注册为SPN，那么任何用户都可以请求该用户对应的TGS，而该TGS使用用户账户密码哈希加密，攻击者可以从票据中提取哈希，离线破解。</p>
 <h2 id="4-2-黄金票据"><a href="#4-2-黄金票据" class="headerlink" title="4.2. 黄金票据"></a>4.2. 黄金票据</h2><p>当发送TGT时，该票据会使用KRBTGT的账户密码哈希来加密。KRBTGT的密码默认情况下不会被手动设置，因此与主机账户密码一样复杂。当攻击者成功获取KRBTGT密码，伪造TGT时，这种攻击技术称为黄金票据攻击。Mimikatz可以使用KRBTGT密码的RC4哈希来伪造任何用户的票据，并且该过程不需要知道用户密码。</p>
 <div class="center">
-<img src="/.io//4-3-1.png">
+<img src="/2022/11/01/Kerberos-protocol-learning/4-3-1.png">
 </div>
 
 <h2 id="4-3-白银票据"><a href="#4-3-白银票据" class="headerlink" title="4.3. 白银票据"></a>4.3. 白银票据</h2><p>黄金票据对应的是TGT伪造，而白银票据则是TGS伪造。攻击者使用黄金票据时会有安全上的考虑：攻击过程涉及KDC，KDC会发布一个TGT，因此防御方可能会收到警报，捕捉到黄金票据攻击。白银票据更为隐蔽，攻击过程不涉及到KDC。由于这里伪造的是服务票据，因为攻击者需要知道目标服务的密码哈希，而大多数情况下，该哈希对应的是主机账户的密码哈希。对于设置了SPN的服务账户，攻击者也可以针对该SPN生成白银票据。</p>
 <p>举个例子，如果用户名MSSQLServiceAcct创建了一个服务账户，注册了MSSQLSVC主体，那么对应的SPN则为MSSQLSVC&#x2F;MSSQLServiceAcct。如果攻击者获取了账户的密码哈希（通过Kerberoasting或者其他方法），就可以利用该哈希来伪造针对该SPN的TGS，访问对应的服务（这里为MSSQLSVC）。</p>
 <p>对于某些服务（如CIFS），如果使用了用户账户来创建SPN（如CIFS&#x2F;Alice），此时攻击者无法使用该用户的密码来构造CIFS对应的白银票据，这是因为用户并不控制该服务的访问权限，这是主机账户负责的工作。</p>
 <div class="center">
-<img src="/.io//4-3-2.png">
+<img src="/2022/11/01/Kerberos-protocol-learning/4-3-2.png">
 </div>
 
 <p>白银票据存在的安全风险在于，如果设置了PAC验证功能，票据就会发送到KDC进行验证，此时攻击将以失败告终。</p>

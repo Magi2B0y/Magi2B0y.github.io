@@ -172,24 +172,24 @@
       </div>
       <div class="markdown-body">
         <h1 id="1-判断当前所在域"><a href="#1-判断当前所在域" class="headerlink" title="1. 判断当前所在域"></a>1. 判断当前所在域</h1><p>查看计算机名、全名、用户名、系统版本、工作站、域、登录域: <code>net config workstation</code> </p>
-<p><img src="/.io//1.png"></p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/1.png"></p>
 <h1 id="2-查看域信任关系"><a href="#2-查看域信任关系" class="headerlink" title="2. 查看域信任关系"></a>2. 查看域信任关系</h1><p>域内用户信息查询等操作，只有system权限用户和域用户才有权限执行。</p>
 <p><code>nltest /domain_trusts</code></p>
-<p><img src="/.io//2.png"></p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/2.png"></p>
 <h1 id="3-查看本机-域用户列表"><a href="#3-查看本机-域用户列表" class="headerlink" title="3. 查看本机&#x2F;域用户列表"></a>3. 查看本机&#x2F;域用户列表</h1><p><code>net user</code> 查看本机的用户账户</p>
-<p><img src="/.io//3-1.png"></p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/3-1.png"></p>
 <p><code>net user /domain</code> 或 <code>net time /domain</code> 查看域控主机的用户账户和其他用户列表</p>
-<p><img src="/.io//3-2.png"></p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/3-2.png"></p>
 <h1 id="4-确定域控主机名称及IP"><a href="#4-确定域控主机名称及IP" class="headerlink" title="4. 确定域控主机名称及IP"></a>4. 确定域控主机名称及IP</h1><p>利用nslookup或者ping可解析IP</p>
-<p><img src="/.io//4.png"></p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/4.png"></p>
 <h1 id="5-查看域里面的工作组，把用户分成了哪些组"><a href="#5-查看域里面的工作组，把用户分成了哪些组" class="headerlink" title="5. 查看域里面的工作组，把用户分成了哪些组"></a>5. 查看域里面的工作组，把用户分成了哪些组</h1><p><code>net group /domain</code></p>
-<p><img src="/.io//5.png"></p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/5.png"></p>
 <h1 id="6-查看域中分组信息"><a href="#6-查看域中分组信息" class="headerlink" title="6. 查看域中分组信息"></a>6. 查看域中分组信息</h1><p>查看域中Domain Admins组，<code>net group &quot;Domain Admins&quot; /domain</code></p>
-<p><img src="/.io//6-1.png"></p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/6-1.png"></p>
 <p><code>net group &quot;Domain Computers&quot; /domain</code></p>
-<p><img src="/.io//6-2.png"></p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/6-2.png"></p>
 <p><code>net group &quot;Domain Controllers&quot; /domain</code></p>
-<p><img src="/.io//6-3.png"></p>
+<p><img src="/./Querying-and-operating-basic-information-in-a-domain/6-3.png"></p>
 
       </div>
       

@@ -183,7 +183,7 @@
 <h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h2><p>KNN算法可以说是最简单的分类算法之一，同时，它也是最常用的分类算法之一，该算法是给定一个训练数据集，对新的输入实例，在训练数据集中找到与该实例最邻近的K个实例，这K个实例的多数属于某个类，就把该输入实例分类到这个类中，类似于现实生活中少数服从多数的思想。</p>
 <p>下面通过一个简单的例子说明一下：如下图，绿色圆要被决定赋予哪个类，是红色三角形还是蓝色四方形？如果K&#x3D;3，由于红色三角形所占比例为2&#x2F;3，绿色圆将被赋予红色三角形那个类，如果K&#x3D;5，由于蓝色四方形比例为3&#x2F;5，因此绿色圆被赋予蓝色四方形类。</p>
 <div class="center">
-<img src="/.io//1-1.png">
+<img src="/2022/06/30/Machine_Learning--KNN_algorithm/1-1.png">
 </div>
 
 <h2 id="2-算法流程"><a href="#2-算法流程" class="headerlink" title="2. 算法流程"></a>2. 算法流程</h2><p>在训练集中数据和标签已知的情况下，输入测试数据，将测试数据的特征与训练集中对应的特征进行相互比较，找到训练集中与之最为相似的前K个数据，则该测试数据对应的类别就是K个数据中出现次数最多的那个分类，其算法的描述为：</p>
@@ -198,12 +198,12 @@
 <p><strong>距离计算：</strong></p>
 <p>要度量空间中点距离的话，有好几种度量方式，比如常见的曼哈顿距离计算，欧式距离计算等等。不过通常KNN算法中使用的是欧式距离，这里只是简单说一下，拿二维平面为例，，二维空间两个点的欧式距离计算公式如下：</p>
 <div class="center">
-<img src="/.io//2-1.png">
+<img src="/2022/06/30/Machine_Learning--KNN_algorithm/2-1.png">
 </div>
 
 <p>拓展到多维空间，则公式变成这样：</p>
 <div class="center">
-<img src="/.io//2-2.png">
+<img src="/2022/06/30/Machine_Learning--KNN_algorithm/2-2.png">
 </div>
 
 <p>KNN算法最简单粗暴的就是将预测点与所有点距离进行计算，然后保存并排序，选出前面K个值看看哪些类别比较多。</p>
@@ -275,7 +275,7 @@
 
 <p>python文件的调用流程如下：</p>
 <div class="center">
-<img src="/.io//4-1.png">
+<img src="/2022/06/30/Machine_Learning--KNN_algorithm/4-1.png">
 </div>
 
 <br>
@@ -286,17 +286,17 @@
 <p><strong>输出结果集：</strong></p>
 <p>每首音乐的10首相似音乐：</p>
 <div class="center">
-<img src="/.io//4-4.png">
+<img src="/2022/06/30/Machine_Learning--KNN_algorithm/4-4.png">
 </div>
 
 <p>为每位用户推荐的20首音乐：</p>
 <div class="center">
-<img src="/.io//4-2.png">
+<img src="/2022/06/30/Machine_Learning--KNN_algorithm/4-2.png">
 </div>
 
 <p>为每位用户推荐的10位相似好友：</p>
 <div class="center">
-<img src="/.io//4-3.png">
+<img src="/2022/06/30/Machine_Learning--KNN_algorithm/4-3.png">
 </div>
 
 
@@ -341,7 +341,7 @@
 
 <p>以下以一张图来简单概述协议之间的区别：</p>
 <div class="center">
-<img src="/.io//4-5.png">
+<img src="/2022/06/30/Machine_Learning--KNN_algorithm/4-5.png">
 </div>
 
 <p>更加详细的说明请查看 <a target="_blank" rel="noopener" href="https://opensource.org/licenses/alphabetical">https://opensource.org/licenses/alphabetical</a></p>

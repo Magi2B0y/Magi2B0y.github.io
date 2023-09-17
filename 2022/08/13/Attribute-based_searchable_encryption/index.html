@@ -189,7 +189,7 @@
 <h2 id="1-2-基于角色的访问控制-Role-Based-Access-Control，RBA"><a href="#1-2-基于角色的访问控制-Role-Based-Access-Control，RBA" class="headerlink" title="1.2 基于角色的访问控制(Role-Based Access Control，RBA)"></a>1.2 基于角色的访问控制(Role-Based Access Control，RBA)</h2><h3 id="1-2-1-概念"><a href="#1-2-1-概念" class="headerlink" title="1.2.1 概念"></a>1.2.1 概念</h3><p>基于角色的访问控制，就是用户通过角色与权限进行关联。简单地说，一个用户拥有若干角色，每一个角色拥有若干权限。这样，就构造成“用户-角色-权限”的授权模型。在这种模型中，用户与角色之间，角色与权限（功能）之间，一般都是多对多的关系。</p>
 <h2 id="1-3-基于属性的加密-Attribute-based-encryption，ABE"><a href="#1-3-基于属性的加密-Attribute-based-encryption，ABE" class="headerlink" title="1.3 基于属性的加密(Attribute-based encryption，ABE)"></a>1.3 基于属性的加密(Attribute-based encryption，ABE)</h2><h3 id="1-3-1-概念"><a href="#1-3-1-概念" class="headerlink" title="1.3.1 概念"></a>1.3.1 概念</h3><p>2006年，Goyal V, Pandey A, Sahai A, Waters B在the 13th ACM Conf. on Computer and Communications Security会议上提出了基于属性加密的概念， Sahai A, Waters B提出了第一个基于属性加密方案。其概念如下图所示：</p>
 <div class="center">
-<img src="/.io//1-3-1.png">
+<img src="/2022/08/13/Attribute-based_searchable_encryption/1-3-1.png">
 </div>
 
 <p>数据拥有者需要制定一条仅有这n个用户才能满足的访问策略，接着输入公共参数PP、该条策略以及明文文件至ABE加密算法，进行加密一次，形成唯一一份密文。得到密文后，数据拥有者将该份密文分别发送给n个不同的用户。</p>
@@ -210,7 +210,7 @@
 <h1 id="2-基于属性的可搜索加密（内嵌CP-ABE模块）"><a href="#2-基于属性的可搜索加密（内嵌CP-ABE模块）" class="headerlink" title="2. 基于属性的可搜索加密（内嵌CP-ABE模块）"></a>2. 基于属性的可搜索加密（内嵌CP-ABE模块）</h1><p><strong>项目地址</strong>：<a target="_blank" rel="noopener" href="https://github.com/Magi2B0y/Attribute-Based-Searchable-Encryption">https://github.com/Magi2B0y/Attribute-Based-Searchable-Encryption</a></p>
 <p><strong>网络业务整体运行流程图</strong>：</p>
 <div class="center">
-<img src="/.io//2.png">
+<img src="/2022/08/13/Attribute-based_searchable_encryption/2.png">
 </div>
 
 <p><strong>流程说明</strong>：</p>

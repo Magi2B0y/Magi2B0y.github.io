@@ -183,7 +183,7 @@
 
 <p>这里以通达OA 2016版的一个文件上传+文件包含漏洞为例，详细说明如何利用 Burpsuit 的 Repeater 模块构造请求数据包</p>
 <div class="center">
-<img src="/.io//1.png">
+<img src="/2023/01/26/Construct-the-packets-by-using-repeater-module-of-Burpsuit/1.png">
 </div>
 
 <p>通达OA是由北京通达信科科技有限公司开发的一款办公系统，攻击者可在未授权的情况下可上传图片木马文件，之后通过精心构造的请求进行文件包含，实现远程命令执行，且攻击者无须登陆认证即可完成攻击</p>
@@ -194,44 +194,44 @@
 </ol>
 <p>首先在 Reaperter 模块复制目标URL：<code>http://192.168.227.129/ispirit/im/upload.php</code>，右键点击<code>Paste URL as request</code></p>
 <div class="center">
-<img src="/.io//2.png">
+<img src="/2023/01/26/Construct-the-packets-by-using-repeater-module-of-Burpsuit/2.png">
 </div>
 
 <p>继续右键点击<code>Change request method</code>，将GET方法改为POST方法</p>
 <div class="center">
-<img src="/.io//3.png">
+<img src="/2023/01/26/Construct-the-packets-by-using-repeater-module-of-Burpsuit/3.png">
 </div>
 
 <p>Send之后会显示<code>-ERR 用户未登录</code></p>
 <div class="center">
-<img src="/.io//4.png">
+<img src="/2023/01/26/Construct-the-packets-by-using-repeater-module-of-Burpsuit/4.png">
 </div>
 
 <p>添加以下参数</p>
 <div class="center">
-<img src="/.io//5.png">
+<img src="/2023/01/26/Construct-the-packets-by-using-repeater-module-of-Burpsuit/5.png">
 </div>
 
 <p>右键点击<code>Change body encoding</code>，将 Content-Type 修改为<code>Content-Type:multipart/form-data; boundary=XXX</code></p>
 <div class="center">
-<img src="/.io//6.png">
+<img src="/2023/01/26/Construct-the-packets-by-using-repeater-module-of-Burpsuit/6.png">
 </div>
 
 <p><strong>PS</strong>：关于不同的 Content-Type，可以查看另一篇文章 <a href="../Learn-Content-Type-parameter/index.html">学习HTTP请求包中的Content-Type参数</a></p>
 <p>在POST数据后面后面继续添加要上传的文件内容，Send后成功返回OK</p>
 <div class="center">
-<img src="/.io//7.png">
+<img src="/2023/01/26/Construct-the-packets-by-using-repeater-module-of-Burpsuit/7.png">
 </div>
 
 <p>成功上传图片。通达OA默认上传位置：<code>myoa/attach/im</code>，则上面的完整路劲为:<code>myoa/attach/im/2301/1277314394.jpg</code></p>
 <p>复制URL：<code>http://192.168.227.129/ispirit/interface/gateway.php</code> ,构造POST请求包，进行文件包含操作，解析出一句话木马，payload为<code>json=&#123;&quot;url&quot;:&quot;/general/../../attach/im/2301/1277314394.jpg&quot;&#125;</code>，成功解析</p>
 <div class="center">
-<img src="/.io//8.png">
+<img src="/2023/01/26/Construct-the-packets-by-using-repeater-module-of-Burpsuit/8.png">
 </div>
 
 <p>解析后的木马文件的位置为<code>http://192.168.227.129/ispirit/interface/bbskali.php</code>，蚁剑连接</p>
 <div class="center">
-<img src="/.io//9.png">
+<img src="/2023/01/26/Construct-the-packets-by-using-repeater-module-of-Burpsuit/9.png">
 </div>
 
 <hr>
